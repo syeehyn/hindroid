@@ -12,7 +12,7 @@ Replicate [Hindroid](https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf
 - [ ] Future Updates...
 ## Prerequisite
 - [ApkTool](https://ibotpeaches.github.io/Apktool/) to decompile an Anroid Apk to Smali code
--[networkX](https://networkx.github.io/documentation/stable/index.html)
+- [networkX](https://networkx.github.io/documentation/stable/index.html)
 to work and visualize graph structures. Install the package on your
 ## References
 
