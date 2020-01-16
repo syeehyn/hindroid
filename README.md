@@ -11,7 +11,7 @@ make a downloading directory
 cd ~/Downloads
 mkdir apk
 ```
-downloads apk from xml to <path>
+download apk from xml to <path>
 ```
 cd <repo directory>/utils
 python
