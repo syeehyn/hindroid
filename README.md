@@ -5,6 +5,28 @@ timeline and task of dsc180a
 Under folder utils, building utility funtions to download apk and transfer apks smali code with python
 - [x] APK downloading with xml files
 - [x] APK -> Smali using apktool
+#### Example
+make a downloading directory
+```
+cd ~/Downloads
+mkdir apk
+```
+downloads apk from xml to <path>
+```
+cd <repo directory>/utils
+python
+import utils
+url = "https://apkpure.com/sitemaps/group.xml.gz" #example url
+utils.download_apps(url, <path>)
+```
+decompile apk files from the directory to smali code
+```
+cd <repo directory>/utils
+python
+import utils
+url = "https://apkpure.com/sitemaps/group.xml.gz" #example url
+utils.download_apps(<apk file path>, <smali code output path>)
+```
 ### Part 1
 Replicate [Hindroid](https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf) Paper
 - [ ] Smali -> Graph Embedding & Feature Extraction with 
