@@ -1,11 +1,11 @@
 # dsc180a Project A
 timeline and task of dsc180a
 ## Task
-### -[x] Part 0
+### Part 0
 Under folder utils, building utility funtions to download apk and transfer apks smali code with python
 - [x] APK downloading with xml files
 - [x] APK -> Smali using apktool
-### -[ ] Part 1
+### Part 1
 Replicate [Hindroid](https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf) Paper
 - [ ] Smali -> Graph Embedding & Feature Extraction with 
 - [ ] ML
