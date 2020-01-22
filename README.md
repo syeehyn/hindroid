@@ -1,4 +1,5 @@
-# dsc180a Project A
+# dsc180a Capstone project Part I: Hindroid Replication
+Replicate [Hindroid](https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf) Paper
 timeline and task of dsc180a
 ## Task
 ### Part 0
@@ -28,7 +29,6 @@ url = "https://apkpure.com/sitemaps/group.xml.gz" #example url
 utils.download_apps(<apk file path>, <smali code output path>)
 ```
 ### Part 1
-Replicate [Hindroid](https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf) Paper
 - [ ] Smali -> Graph Embedding & Feature Extraction with 
 - [ ] ML
 - [ ] Future Updates...
