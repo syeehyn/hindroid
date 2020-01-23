@@ -11,7 +11,6 @@ ML Deployment | Not Started
 This repository contains a mimic implementation and future implementation plan of the [Hindroid](https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf) paper (DOI:[10.1145/3097983.3098026](https://doi.org/10.1145/3097983.3098026)).
 
 - [Hindroid](#hindroid)
-  - [Project Build Status](#project-build-status)
   - [What Is Hindroid](#what-is-hindroid)
   - [What is the Data](#what-is-the-data)
     - [APK and Smali](#apk-and-smali)
