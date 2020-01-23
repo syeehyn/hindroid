@@ -11,6 +11,7 @@ ML Deployment | Not Started
 This repository contains a mimic implementation and future implementation plan of the [Hindroid](https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf) paper (DOI:[10.1145/3097983.3098026](https://doi.org/10.1145/3097983.3098026)).
 
 - [Hindroid](#hindroid)
+  - [Project Build Status](#project-build-status)
   - [What Is Hindroid](#what-is-hindroid)
   - [What is the Data](#what-is-the-data)
     - [APK and Smali](#apk-and-smali)
@@ -253,10 +254,42 @@ Under folder utils, building utility functions to download apk and transfer apks
 
 ## Prerequisite
 
-- [ApkTool](https://ibotpeaches.github.io/Apktool/) to decompile an Anroid Apk to Smali code
+- [ApkTool](https://ibotpeaches.github.io/Apktool/) to decompile an Android Apk to Smali code
+  
+  **Installation**
+
+  APKTool and Java dependency is preinstalled in repo
+  
+  The directory of ApkTool is
+
+  ```bash
+  ./utils/apktool
+  ./utils/apktool.jar
+  ```
+
+  The directory of Java is
+
+  ```bash
+  ./utils/jre1.8.0_241/
+  ```
+
+  if you are using bash
+
+  ```bash
+  echo $"export PATH=$PATH:<REPO_DIR>/utils" >> ~/.bash_profile
+  echo $"export PATH=$PATH:<REPO_DIR>/utils/jre1.8.0_241/bin" >> ~/.bash_profile
+  ```
+
+  if you are using zsh
+
+  ```zsh
+  echo $"export PATH=$PATH:<REPO_DIR>/utils" >> ~/.zshrc 
+  echo $"export PATH=$PATH:<REPO_DIR>/utils/jre1.8.0_241/bin" >> ~/.zshrc 
+  ```
+
 - [networkX](https://networkx.github.io/documentation/stable/index.html)
 
-- This repo is the environment what I used
+- [DockerFile](https://github.com/ucsd-ets/scipy-ml-notebook/blob/master/Dockerfile) of the environment
 
 ## References
 
