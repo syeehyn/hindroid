@@ -1,7 +1,5 @@
 # Hindroid
 
-## Project Build Status
-
 Project|build Status
 ---|---
 Data Ingesting|In progress
