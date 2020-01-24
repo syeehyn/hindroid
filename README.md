@@ -385,10 +385,10 @@ paper on Malware detection.
   - [Computer Viruses and
     Malware](https://www.springer.com/us/book/9780387302362) by Aycock,
     John. Available for pdf download on campus networks or VPN.
-    
+
   - [Slides](http://cseweb.ucsd.edu/classes/sp18/cse127-a/CSE127sp18.18-Savage.pdf)
     for the Malware and Cybercrime lecture of CSE 127 at UCSD.
-    
+
   - A [reference
     sheet](http://pages.cpsc.ucalgary.ca/~joel.reardon/mobile/smali-cheat.pdf)
     for decompiling Android applications to Smali Code.

@@ -240,7 +240,7 @@ Under folder utils, building utility functions to download apk and transfer apks
 <li><code>priority</code>: the priority group of the app</li>
 <li><code>sitemap_url</code>: the url in sitemap.xml</li>
 </ul>
-<p>Metadata is a map of what we will sample according to, we can do different sampling with the matadata.</p>
+<p>Metadata is a map of what we will sample according to, we can do different sampling with the metadata.</p>
 </li>
 </ul>
 <h4 id="future-plan">Future Plan</h4>
@@ -248,10 +248,10 @@ Under folder utils, building utility functions to download apk and transfer apks
 <ul>
 <li>API call adjacency matrices</li>
 <li>developer info of specific app</li>
-<li>developer signiture</li>
+<li>developer signature</li>
 <li>name of the app</li>
 <li>first category (e.g. Game) of the app</li>
-<li>secont category (e.g. Game type) of the app</li>
+<li>second category (e.g. Game type) of the app</li>
 <li>etc.</li>
 </ul>
 <h3 id="data-ingestion-pipeline">Data Ingestion Pipeline</h3>
@@ -266,20 +266,20 @@ Under folder utils, building utility functions to download apk and transfer apks
 <p><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> Naive sampling</p>
 <p>random sample same amount of apks from APKPure to the malware sample.</p>
 <p><strong>usage</strong></p>
-<p>sampling 1000 benigned apks</p>
+<p>sampling 1000 benign apks</p>
 <pre><code class="language-python"><div><span class="hljs-keyword">import</span> json
 sys.path.append(<span class="hljs-string">'./utils'</span>)
 <span class="hljs-keyword">import</span> utils
 <span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
 cfg = json.load(open(<span class="hljs-string">'./sitemap.json'</span>))
-utils.create_sitemap_df(**cfg) <span class="hljs-comment">#Create a sitemap dataframe with corresponding info.</span>
+utils.create_sitemap_df(**cfg) <span class="hljs-comment">#Create a sitemap DataFrame with corresponding info.</span>
 metadata = pd.read_csv(<span class="hljs-string">'./data/metadata/metadata.csv'</span>)
 metadata.sample(<span class="hljs-number">1000</span>)
 urls = metadata.loc
 </div></code></pre>
 </li>
 <li class="task-list-item">
-<p><input class="task-list-item-checkbox" disabled="" type="checkbox"> Category Sampling *will be inplement after feature extraction</p>
+<p><input class="task-list-item-checkbox" disabled="" type="checkbox"> Category Sampling *will be implement after feature extraction</p>
 <ul>
 <li>
 <p>sampling same number of apks according to corresponding category from APKPure with the malware sample.</p>
@@ -287,16 +287,14 @@ urls = metadata.loc
 <li>
 <p>First sample a smaller set from sitemap, then fetch the category of each apps by requesting apps' links. With each category get the even matched links to sample.</p>
 <p><strong>usage</strong></p>
+</li>
+</ul>
 <pre><code class="language-python"><div><span class="hljs-comment">###TODO</span>
 </div></code></pre>
 </li>
-</ul>
-</li>
 <li class="task-list-item">
 <p><input class="task-list-item-checkbox" disabled="" type="checkbox"> Future Sample Methods Coming Soon...</p>
-<ul>
-<li>update after observation of first two sampling methods.</li>
-</ul>
+<p>update after observation of first two sampling methods.</p>
 </li>
 </ul>
 <h4 id="data-downloading">Data Downloading</h4>
