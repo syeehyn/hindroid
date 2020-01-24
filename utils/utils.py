@@ -5,6 +5,7 @@ import glob
 import requests
 import bs4
 import gzip
+import io
 import pandas as pd
 from multiprocess import Pool
 from tqdm import tqdm
@@ -17,9 +18,8 @@ def get_xmls(url):
     groups = soup.findAll('loc')[5:]
     return [i.text for i in groups]
 def create_xml_df(xml):
-    response = requests.get(xml, stream=True)
-    f = bytearray(response.raw.read())
-    urlText = zlib.decompress(f, 15+32)
+    response = requests.get(xml).content
+    urlText = io.StringIO(gzip.decompress(response).decode())
     soup = bs4.BeautifulSoup(urlText, 'lxml')
     loc = soup.findAll('loc')
     lastmod = soup.findAll('lastmod')
@@ -33,7 +33,7 @@ def create_xml_df(xml):
         'sitemap_url': [xml for i in loc]
     })
 def create_sitemap_df(**cfg):
-    url, fp, nw = cfg['url'], cfg['dir'], cfg['NUM_WORDERS']
+    url, fp, nw = cfg['url'], cfg['dir'], cfg['NUM_WORKERS']
     if not os.path.exists('./data/'):
         setup_env()
     if not os.path.exists(fp + '/'):
@@ -41,9 +41,9 @@ def create_sitemap_df(**cfg):
     xmls = get_xmls(url)
     
     with Pool(nw) as p:
-        df_list = list(tqdm(p.imap_unordered(create_xml_df, xmls), total = len(xmls)))
+        df_list = list(tqdm(p.imap_unordered(create_xml_df, xmls), total = len(xmls), position=0, leave=True))
     metadata = pd.concat(df_list, ignore_index=True)
-    metadata.to_csv('metadata.csv',index = False)
+    metadata.to_csv(fp + '/metadata.csv',index = False)
 def download_app(url, op, app):
     """[download a apk file to the output path]
     
