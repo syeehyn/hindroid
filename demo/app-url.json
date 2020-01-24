@@ -1,8 +1,8 @@
 {
-    "dir": "./data",
-    "urls": [
-        "https://apkpure.com/plague-inc/com.miniclip.plagueinc",
-        "https://apkpure.com/instagram/com.instagram.android"
-        ],
-    "verbose": true
-    }
+"dir": "./data/apps",
+"urls": [
+    "https://apkpure.com/plague-inc/com.miniclip.plagueinc",
+    "https://apkpure.com/instagram/com.instagram.android"
+    ],
+"verbose": true
+}

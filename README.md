@@ -1,6 +1,6 @@
 # Hindroid
 
-This repository contains a mimic implementation and future implementation plan of the [Hindroid](https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf) paper (DOI:[10.1145/3097983.3098026](https://doi.org/10.1145/3097983.3098026)).
+This repository contains a mimic implementation and future implementation plan of the [Hindroid](https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf) paper (DO>>> I:[10.1145/3097983.3098026](https://doi.org/10.1145/3097983.3098026)).
 
 Project|build Status
 ---|---
@@ -26,6 +26,7 @@ ML Deployment | Not Started
         - [Data Sampling](#data-sampling)
         - [Data Downloading](#data-downloading)
         - [Converting apks to smali](#converting-apks-to-smali)
+        - [Fetching data](#fetching-data)
         - [Storing data](#storing-data)
   - [Feature Extraction](#feature-extraction)
   - [Machine Learning](#machine-learning)
@@ -142,18 +143,16 @@ Since we need to feed in data into a ML pipeline to make classification, we need
 
 ``` source
 data/
-|-- apps/
-|   |-- com.miniclip.plagueinc/
-|   |   |-- plagueinc.apk
-|   |   |-- plagueinc/
-|   |   |   |-- AndroidManifest.xml
-|   |   |   |-- smali*/
-|   |
-|   |-- com.instagram.android/
-|   |   |-- instagram.apk
-|   |   |-- instagram/
-|   |   |   |-- AndroidManifest.xml
-|   |   |   |-- smali*/
+|-- plagueinc/
+|   |-- plagueinc.apk
+|   |-- plagueinc/
+|   |   |-- AndroidManifest.xml
+|   |   |-- smali*/
+|-- instagram/
+|   |-- instagram.apk
+|   |-- instagram/
+|   |   |-- AndroidManifest.xml
+|   |   |-- smali*/
 ```
 
 #### Data Ingestion Pipeline
@@ -162,17 +161,24 @@ data/
 
   get the list of apks to download from `sitemap.xml`
 
-- [ ] Naive sampling
+- [x] Naive sampling
   - random sample same amount of apks from APKPure to the malware sample.
 
     **usage**
 
     ```python
-    ###TODO
+    import json
+    sys.path.append('./utils')
+    import utils
+    import pandas as pd
+    cfg = json.load(open('./sitemap.json'))
+    utils.clean_sitemap(**cfg) #Create a sitemap dataframe with corresponding info.
+
     ```
 
 - [ ] Category Sampling
   - sampling same number of apks according to corresponding category from APKPure with the malware sample.
+  - First sample a smaller set from sitemap, then fetch the category of each apps by requesting apps' links. With each category get the even matched links to sample.
 
      **usage**
 
@@ -185,7 +191,7 @@ data/
   
 ##### Data Downloading
 
-- [ ] Given a `app-url.json` to execute download.
+- [x] Given a `app-url.json` to execute download.
 
     For example, to download `facebook` and `Plague Inc.` apps to `./data` directory the `app-url.json` may look like:
 
@@ -195,67 +201,71 @@ data/
   "urls": [
       "https://apkpure.com/plague-inc/com.miniclip.plagueinc",
       "https://apkpure.com/instagram/com.instagram.android"
-      ]
+      ],
+  "verbose": 1
   }
   ```
 
    **usage**
 
   ```python
-  ###TODO
-  ```
-
-- [ ] Given a `xml-url.json` to execute download.
-    For example, to download `` and `` apps to `./data` directory the `xml-url.json`` may look like:
-
-  ```json
-  {
-  "data_dir": "./data",
-  "urls": [
-      "",
-      ""
-      ]
-  }
-  ```
-
-   **usage**
-
-  ```python
-  ###TODO
+  import json
+  import re
+  sys.path.append('./utils')
+  import utils
+  cfg = json.load(open('./demo/app-url.json'))
+  urls, fp = cfg['urls'], cfg['data_dir']
+  for url in urls:
+    app = re.findall(r'https:\/\/apkpure.com\/(.*?)\/', url)[0]
+    utils.download_app(url, fp, app)
   ```
 
 ##### Converting apks to smali
 
 - [x] APK -> Smali using apktool
 
+  check the documentation of [APKTool](https://ibotpeaches.github.io/Apktool/documentation/)
+
+##### Fetching data
+
+- [x] fetching data consists downloading apk and decompose them into data schemas.
+
   **usage**
 
-  make a downloading directory
-
-  ```zsh
-  cd ~/Downloads
-  mkdir apk
-  cd <repo directory>/utils
-  ```
-
-  download apk from xml to certain directory
-
   ```python
-  import utils
-  url = "https://apkpure.com/sitemaps/group.xml.gz" #example url
-  utils.download_apps(url, <path>)
-  ```
+    import json
+    sys.path.append('./utils')
+    import utils
+    cfg = json.load(open('./demo/app-url.json'))
+    utils.get_data(**cfg)
+    >>> fetched ./data/plague-inc/plague-inc.apk, start decoding
+    >>> I: Using Apktool 2.4.1 on plague-inc.apk
+    >>> I: Loading resource table...
+    >>> I: Decoding AndroidManifest.xml with resources...
+    >>> I: Loading resource table from file: /Users/syeehyn/Library/apktool/framework/1.apk
+    >>> I: Regular manifest package...
+    >>> I: Decoding file-resources...
+    >>> I: Decoding values */* XMLs...
+    >>> I: Baksmaling classes.dex...
+    >>> I: Copying assets and libs...
+    >>> I: Copying unknown files...
+    >>> I: Copying original files...
 
-  decompile apk files from the directory to smali code
-
-  ```zsh
-  cd <repo directory>/utils
-  ```
-
-  ```python
-  import utils
-  url = "https://apkpure.com/sitemaps/group.xml.gz" #example url
-  utils.download_apps(<apk file path>, <smali code output path>)
+    fetched ./data/instagram/instagram.apk, start decoding
+    >>> I: Using Apktool 2.4.1 on instagram.apk
+    >>> I: Loading resource table...
+    >>> I: Decoding AndroidManifest.xml with resources...
+    >>> I: Loading resource table from file: /Users/syeehyn/Library/apktool/framework/1.apk
+    >>> I: Regular manifest package...
+    >>> I: Decoding file-resources...
+    >>> I: Decoding values */* XMLs...
+    >>> I: Baksmaling classes.dex...
+    >>> I: Baksmaling classes2.dex...
+    >>> I: Baksmaling classes3.dex...
+    >>> I: Baksmaling classes4.dex...
+    >>> I: Copying assets and libs...
+    >>> I: Copying unknown files...
+    >>> I: Copying original files...
   ```
 
 ##### Storing data

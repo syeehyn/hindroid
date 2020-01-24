@@ -4,32 +4,46 @@ import subprocess
 import glob
 import requests
 import bs4
-import zlib
-
-def download_apps(url, op):
-    """[download apk from a given xml.gz link]
-        url = "https://apkpure.com/sitemaps/group.xml.gz"
-        path = "/Users/syeehyn/Downloads/apk"
-        download_apps(url, path)
-    Arguments:
-        url {[string]} -- [xml.gz url]
-        op {[string]} -- [output file path]
-    """'''    '''
-    response = requests.get(url, stream=True)
-    f = response.raw.read()
-    f = bytearray(f)
+import gzip
+import pandas as pd
+from multiprocess import Pool
+from tqdm import tqdm
+def setup_env():
+    if not os.path.exists('./data'):
+        os.mkdir('./data')
+def get_xmls(url):
+    resp = requests.get(url)
+    soup = bs4.BeautifulSoup(resp.text, 'lxml')
+    groups = soup.findAll('loc')[5:]
+    return [i.text for i in groups]
+def create_xml_df(xml):
+    response = requests.get(xml, stream=True)
+    f = bytearray(response.raw.read())
     urlText = zlib.decompress(f, 15+32)
-    soup = bs4.BeautifulSoup(urlText, 'html.parser')
-    app_links = soup.find_all('loc')
-    print("approximate {} apk files to download".format(len(app_links)))
-    counter = 0
-    for links in app_links:
-        download_link = get_app_urls(links.string)
-        if download_link:
-            download_app(download_link, op)
-        counter += 1
-        print('{0}/{1}'.format(counter, len(app_links)),end = '\r')
-
+    soup = bs4.BeautifulSoup(urlText, 'lxml')
+    loc = soup.findAll('loc')
+    lastmod = soup.findAll('lastmod')
+    changefreq = soup.findAll('changefreq')
+    priority = soup.findAll('priority')
+    return pd.DataFrame({
+        'loc': [i.text for i in loc],
+        'lastmod': [i.text for i in lastmod],
+        'changefreq': [i.text for i in changefreq],
+        'priority': [i.text for i in priority],
+        'sitemap_url': [xml for i in loc]
+    })
+def create_sitemap_df(**cfg):
+    url, fp, nw = cfg['url'], cfg['dir'], cfg['NUM_WORDERS']
+    if not os.path.exists('./data/'):
+        setup_env()
+    if not os.path.exists(fp + '/'):
+        os.mkdir(fp)
+    xmls = get_xmls(url)
+    
+    with Pool(nw) as p:
+        df_list = list(tqdm(p.imap_unordered(create_xml_df, xmls), total = len(xmls)))
+    metadata = pd.concat(df_list, ignore_index=True)
+    metadata.to_csv('metadata.csv',index = False)
 def download_app(url, op, app):
     """[download a apk file to the output path]
     
@@ -51,10 +65,24 @@ def download_app(url, op, app):
     except AttributeError:
         pass
 def get_data(**cfg):
-    fp, urls = cfg['dir'], cfg['urls']
+    fp, urls, verbose = cfg['dir'], cfg['urls'], cfg
     if not os.path.exists(fp + '/'):
         os.mkdir(fp + '/')
     for url in urls:
         app = re.findall(r'https:\/\/apkpure.com\/(.*?)\/', url)[0]
         download_app(url, fp, app)
+        apk_dir = fp + '/' + app + '/' + app + '.apk'
+        op = fp + '/' + app + '/' + app
+        if verbose:
+            print('fetched {}, start decoding'.format(apk_dir))
+            command = subprocess.run([
+                'apktool', 'd', 
+                apk_dir,
+                '-o', op], capture_output = True)
+            print(command.stdout.decode())
+        else:
+            command = subprocess.run([
+                'apktool', 'd', 
+                apk_dir,
+                '-o', op])
         
