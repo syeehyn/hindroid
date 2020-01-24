@@ -22,16 +22,20 @@ ML Deployment | Not Started
       - [Data Accessability](#data-accessability)
       - [Data Privacy](#data-privacy)
       - [Data Schemas](#data-schemas)
-      - [Data Ingestion Pipeline](#data-ingestion-pipeline)
-        - [Data Sampling](#data-sampling)
-        - [Data Downloading](#data-downloading)
-        - [Converting apks to smali](#converting-apks-to-smali)
-        - [Fetching data](#fetching-data)
-        - [Storing data](#storing-data)
+      - [Future Plan](#future-plan)
+    - [Data Ingestion Pipeline](#data-ingestion-pipeline)
+      - [Data Sampling](#data-sampling)
+      - [Data Downloading](#data-downloading)
+      - [Converting apks to smali](#converting-apks-to-smali)
+      - [Fetching and Storing Data](#fetching-and-storing-data)
   - [Feature Extraction](#feature-extraction)
   - [Machine Learning](#machine-learning)
   - [Prerequisite](#prerequisite)
   - [References](#references)
+  - [Malware Background](#malware-background)
+  - [Graph Basics](#graph-basics)
+  - [Graph Techniques in Machine Learning](#graph-techniques-in-machine-learning)
+  - [Machine Learning on Source Code](#machine-learning-on-source-code)
 
 ## What Is Hindroid
 
@@ -139,32 +143,65 @@ Under folder utils, building utility functions to download apk and transfer apks
 
 #### Data Schemas
 
-Since we need to feed in data into a ML pipeline to make classification, we need preprocess our data, storing as a designed Data Schema like following form:
+- Since we need to feed in data into a ML pipeline to make classification, we need preprocess our data, storing as a designed Data Schema like following form:
 
-``` source
-data/
-|-- plagueinc/
-|   |-- plagueinc.apk
-|   |-- plagueinc/
-|   |   |-- AndroidManifest.xml
-|   |   |-- smali*/
-|-- instagram/
-|   |-- instagram.apk
-|   |-- instagram/
-|   |   |-- AndroidManifest.xml
-|   |   |-- smali*/
-```
+  ``` source
+  data/
+  |-- plagueinc/
+  |   |-- plagueinc.apk
+  |   |-- plagueinc/
+  |   |   |-- AndroidManifest.xml
+  |   |   |-- smali*/
+  |-- instagram/
+  |   |-- instagram.apk
+  |   |-- instagram/
+  |   |   |-- AndroidManifest.xml
+  |   |   |-- smali*/
+  ```
 
-#### Data Ingestion Pipeline
+  Since apks are fairly large, and we are interested in the API call of every app. We may only keep the file AndroidManifest.xml and smali folders. For each app, after extraction of smali, we will delete the .apk file
 
-##### Data Sampling
+- For each app, we will create an overall metadata.csv to store their feature according their corresponding sitemap.
 
-  get the list of apks to download from `sitemap.xml`
+  The metadata will consist following columns:
+
+  - `loc`: the url of specific app
+  - `lastmod`: the datetime of the last update of the app
+  - `changefreq`: check for update frequency
+  - `priority`: the priority group of the app
+  - `sitemap_url`: the url in sitemap.xml
+
+  Metadata is a map of what we will sample according to, we can do different sampling with the matadata.
+
+#### Future Plan
+
+We plan to add following features (subject to change) to the sample of metadata in feature extraction section:
+
+- API call adjacency matrices
+- developer info of specific app
+- developer signiture
+- name of the app
+- first category (e.g. Game) of the app
+- secont category (e.g. Game type) of the app
+- etc.
+
+### Data Ingestion Pipeline
+
+#### Data Sampling
+
+  get the list of apks url to download from `sitemap.xml`
+
+- [x] Initialize `metadata.csv` from `sitemap.xml`
+
+    Initialize a metadata gives us a hint what data to sample:
 
 - [x] Naive sampling
-  - random sample same amount of apks from APKPure to the malware sample.
+  
+    random sample same amount of apks from APKPure to the malware sample.
 
     **usage**
+
+    sampling 1000 benigned apks
 
     ```python
     import json
@@ -172,11 +209,13 @@ data/
     import utils
     import pandas as pd
     cfg = json.load(open('./sitemap.json'))
-    utils.clean_sitemap(**cfg) #Create a sitemap dataframe with corresponding info.
-
+    utils.create_sitemap_df(**cfg) #Create a sitemap dataframe with corresponding info.
+    metadata = pd.read_csv('./data/metadata/metadata.csv')
+    metadata.sample(1000)
+    urls = metadata.loc
     ```
 
-- [ ] Category Sampling
+- [ ] Category Sampling *will be inplement after feature extraction
   - sampling same number of apks according to corresponding category from APKPure with the malware sample.
   - First sample a smaller set from sitemap, then fetch the category of each apps by requesting apps' links. With each category get the even matched links to sample.
 
@@ -189,7 +228,7 @@ data/
 - [ ] Future Sample Methods Coming Soon...
   - update after observation of first two sampling methods.
   
-##### Data Downloading
+#### Data Downloading
 
 - [x] Given a `app-url.json` to execute download.
 
@@ -220,63 +259,79 @@ data/
     utils.download_app(url, fp, app)
   ```
 
-##### Converting apks to smali
+#### Converting apks to smali
 
 - [x] APK -> Smali using apktool
 
   check the documentation of [APKTool](https://ibotpeaches.github.io/Apktool/documentation/)
 
-##### Fetching data
+#### Fetching and Storing Data
+
+The complete pipeline of getting both metadata and downloading apk and decompose them into data schemas.
+
+[Demo Notebook](./demo/demo.ipynb)
 
 - [x] fetching data consists downloading apk and decompose them into data schemas.
 
   **usage**
 
   ```python
-    import json
-    sys.path.append('./utils')
-    import utils
-    cfg = json.load(open('./demo/app-url.json'))
-    utils.get_data(**cfg)
-    >>> fetched ./data/plague-inc/plague-inc.apk, start decoding
-    >>> I: Using Apktool 2.4.1 on plague-inc.apk
-    >>> I: Loading resource table...
-    >>> I: Decoding AndroidManifest.xml with resources...
-    >>> I: Loading resource table from file: /Users/syeehyn/Library/apktool/framework/1.apk
-    >>> I: Regular manifest package...
-    >>> I: Decoding file-resources...
-    >>> I: Decoding values */* XMLs...
-    >>> I: Baksmaling classes.dex...
-    >>> I: Copying assets and libs...
-    >>> I: Copying unknown files...
-    >>> I: Copying original files...
+  import json
+  sys.path.append('./utils')
+  import utils
+  cfg = json.load(open('./demo/app-url.json'))
+  utils.get_data(**cfg)
+  >>> fetched ./data/plague-inc/plague-inc.apk, start decoding
+  >>> I: Using Apktool 2.4.1 on plague-inc.apk
+  >>> I: Loading resource table...
+  >>> I: Decoding AndroidManifest.xml with resources...
+  >>> I: Loading resource table from file: /Users/syeehyn/Library/apktool/framework/1.apk
+  >>> I: Regular manifest package...
+  >>> I: Decoding file-resources...
+  >>> I: Decoding values */* XMLs...
+  >>> I: Baksmaling classes.dex...
+  >>> I: Copying assets and libs...
+  >>> I: Copying unknown files...
+  >>> I: Copying original files...
 
-    fetched ./data/instagram/instagram.apk, start decoding
-    >>> I: Using Apktool 2.4.1 on instagram.apk
-    >>> I: Loading resource table...
-    >>> I: Decoding AndroidManifest.xml with resources...
-    >>> I: Loading resource table from file: /Users/syeehyn/Library/apktool/framework/1.apk
-    >>> I: Regular manifest package...
-    >>> I: Decoding file-resources...
-    >>> I: Decoding values */* XMLs...
-    >>> I: Baksmaling classes.dex...
-    >>> I: Baksmaling classes2.dex...
-    >>> I: Baksmaling classes3.dex...
-    >>> I: Baksmaling classes4.dex...
-    >>> I: Copying assets and libs...
-    >>> I: Copying unknown files...
-    >>> I: Copying original files...
+  fetched ./data/instagram/instagram.apk, start decoding
+  >>> I: Using Apktool 2.4.1 on instagram.apk
+  >>> I: Loading resource table...
+  >>> I: Decoding AndroidManifest.xml with resources...
+  >>> I: Loading resource table from file: /Users/syeehyn/Library/apktool/framework/1.apk
+  >>> I: Regular manifest package...
+  >>> I: Decoding file-resources...
+  >>> I: Decoding values */* XMLs...
+  >>> I: Baksmaling classes.dex...
+  >>> I: Baksmaling classes2.dex...
+  >>> I: Baksmaling classes3.dex...
+  >>> I: Baksmaling classes4.dex...
+  >>> I: Copying assets and libs...
+  >>> I: Copying unknown files...
+  >>> I: Copying original files...
   ```
 
-##### Storing data
+- [x] fetching the sitemap DataFrame
 
-- [ ] storing data accoding to schema
+  **usage**
+
+  ```python
+  import json
+  sys.path.append('./utils')
+  import utils
+  utils.setup_env()
+  cfg = json.load(open('./demo/sitemap.json'))
+  utils.create_sitemap_df(**cfg)
+  ```
 
 ## Feature Extraction
 
 - [ ] Smali -> Graph Embedding & Feature Extraction with ML framework.
+- [ ] etc.
 
 ## Machine Learning
+
+- [ ] planning
 
 ------------------------------------------------------------------------------------------------
 
@@ -324,3 +379,33 @@ data/
 References are found both in the weekly readings, as well as in
 [references](references.md). These will be update throughout the
 quarter.
+
+[HinDroid](https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf)
+paper on Malware detection.
+
+## Malware Background
+
+- [Computer Viruses and
+  Malware](https://www.springer.com/us/book/9780387302362) by Aycock,
+  John. Available for pdf download on campus networks or VPN.
+  
+- [Slides](http://cseweb.ucsd.edu/classes/sp18/cse127-a/CSE127sp18.18-Savage.pdf)
+  for the Malware and Cybercrime lecture of CSE 127 at UCSD.
+  
+- A [reference
+  sheet](http://pages.cpsc.ucalgary.ca/~joel.reardon/mobile/smali-cheat.pdf)
+  for decompiling Android applications to Smali Code.
+
+## Graph Basics
+
+...
+
+## Graph Techniques in Machine Learning
+
+- A (graduate) [survey course](http://web.eecs.umich.edu/~dkoutra/courses/W18_598/) at Michigan on Graph Mining.
+
+## Machine Learning on Source Code
+
+- A [collection](https://github.com/src-d/awesome-machine-learning-on-source-code)
+  of papers and references exploring understanding source code with
+  machine learning.

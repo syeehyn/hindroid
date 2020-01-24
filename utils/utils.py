@@ -10,14 +10,29 @@ import pandas as pd
 from multiprocess import Pool
 from tqdm import tqdm
 def setup_env():
+    """[setting up environment]
+    """    
     if not os.path.exists('./data'):
         os.mkdir('./data')
 def get_xmls(url):
+    """[get xml of the sitemap]
+    
+    Returns:
+        [list] -- [list of xml.gz]
+    """    
     resp = requests.get(url)
     soup = bs4.BeautifulSoup(resp.text, 'lxml')
     groups = soup.findAll('loc')[5:]
     return [i.text for i in groups]
 def create_xml_df(xml):
+    """[get the data frame of xml.gz]
+    
+    Arguments:
+        xml {[string]} -- [the gz compression of xml link]
+    
+    Returns:
+        [pd.DataFrame] -- [the dataframe of the xml link]
+    """    
     response = requests.get(xml).content
     urlText = io.StringIO(gzip.decompress(response).decode())
     soup = bs4.BeautifulSoup(urlText, 'lxml')
@@ -33,6 +48,8 @@ def create_xml_df(xml):
         'sitemap_url': [xml for i in loc]
     })
 def create_sitemap_df(**cfg):
+    """[create the metadata of the sitemap]
+    """    
     url, fp, nw = cfg['url'], cfg['dir'], cfg['NUM_WORKERS']
     if not os.path.exists('./data/'):
         setup_env()
@@ -65,6 +82,8 @@ def download_app(url, op, app):
     except AttributeError:
         pass
 def get_data(**cfg):
+    """[download and extract the apks]
+    """    
     fp, urls, verbose = cfg['dir'], cfg['urls'], cfg
     if not os.path.exists(fp + '/'):
         os.mkdir(fp + '/')
