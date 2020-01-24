@@ -167,7 +167,7 @@ Under folder utils, building utility functions to download apk and transfer apks
   - `priority`: the priority group of the app
   - `sitemap_url`: the url in sitemap.xml
 
-  Metadata is a map of what we will sample according to, we can do different sampling with the matadata.
+  Metadata is a map of what we will sample according to, we can do different sampling with the metadata.
 
 #### Future Plan
 
@@ -175,10 +175,10 @@ We plan to add following features (subject to change) to the sample of metadata 
 
 - API call adjacency matrices
 - developer info of specific app
-- developer signiture
+- developer signature
 - name of the app
 - first category (e.g. Game) of the app
-- secont category (e.g. Game type) of the app
+- second category (e.g. Game type) of the app
 - etc.
 
 ### Data Ingestion Pipeline
@@ -197,7 +197,7 @@ We plan to add following features (subject to change) to the sample of metadata 
 
     **usage**
 
-    sampling 1000 benigned apks
+    sampling 1000 benign apks
 
     ```python
     import json
@@ -205,17 +205,15 @@ We plan to add following features (subject to change) to the sample of metadata 
     import utils
     import pandas as pd
     cfg = json.load(open('./sitemap.json'))
-    utils.create_sitemap_df(**cfg) #Create a sitemap dataframe with corresponding info.
+    utils.create_sitemap_df(**cfg) #Create a sitemap DataFrame with corresponding info.
     metadata = pd.read_csv('./data/metadata/metadata.csv')
     metadata.sample(1000)
     urls = metadata.loc
     ```
 
-- [ ] Category Sampling *will be inplement after feature extraction
-  
-  sampling same number of apks according to corresponding category from APKPure with the malware sample.
-
-  First sample a smaller set from sitemap, then fetch the category of each apps by requesting apps' links. With each category get the even matched links to sample.
+- [ ] Category Sampling *will be implement after feature extraction
+  - sampling same number of apks according to corresponding category from APKPure with the malware sample.
+  - First sample a smaller set from sitemap, then fetch the category of each apps by requesting apps' links. With each category get the even matched links to sample.
 
      **usage**
 
