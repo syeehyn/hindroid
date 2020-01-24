@@ -36,7 +36,6 @@ def decompose_dir(fp, op, verbose = 0):
     apks = glob.glob(fp+"/*.apk")
     for f in apks:
         decompose(f, op, verbose)
-
 def download_apps(url, op):
     """[download apk from a given xml.gz link]
         url = "https://apkpure.com/sitemaps/group.xml.gz"
@@ -85,13 +84,20 @@ def download_app(url, op):
         op {[string]} -- [output file path]
     """'''    '''
     app = re.findall(r'https:\/\/apkpure.com\/(.*?)\/', url)[0] + '.apk'
+    url += '/download?from=details'
     resp = requests.get(url)
-    urlText = resp.text
     try:
-        soup = bs4.BeautifulSoup(urlText, 'html.parser')
-        resp = requests.get(soup.find("p", {"class": "down-click"}).find("a")['href'])
+        soup = bs4.BeautifulSoup(resp.text, 'html.parser')
+        download_link = soup.find("iframe", {"id": "iframe_download"})['src']
+        resp = requests.get(download_link)
         data = resp.content
         with open(op + '/' + app, 'wb') as fh:
             fh.write(data)
     except AttributeError:
         pass
+def get_apks(**cfg):
+    fp, urls = cfg['dir'], cfg['urls']
+    if not os.path.exists(fp + '/'):
+        os.mkdir(fp + '/')
+    for url in urls:
+        download_app(url, fp)

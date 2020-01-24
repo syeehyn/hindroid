@@ -9,7 +9,6 @@ Feature Extraction| Not Started
 ML Deployment | Not Started
 
 - [Hindroid](#hindroid)
-  - [Project Build Status](#project-build-status)
   - [What Is Hindroid](#what-is-hindroid)
   - [What is the Data](#what-is-the-data)
     - [APK and Smali](#apk-and-smali)
@@ -22,6 +21,7 @@ ML Deployment | Not Started
     - [Data Ingestion Process](#data-ingestion-process)
       - [Data Accessability](#data-accessability)
       - [Data Privacy](#data-privacy)
+      - [Data Schemas](#data-schemas)
       - [Data Ingestion Pipeline](#data-ingestion-pipeline)
         - [Data Sampling](#data-sampling)
         - [Data Downloading](#data-downloading)
@@ -135,6 +135,26 @@ Under folder utils, building utility functions to download apk and transfer apks
   - anonymise apk developer with two-way hash function.
   - anonymise apk signature ,if necessary, with sha256 encryption.
   - anonymise apk category with two-way hash function.
+
+#### Data Schemas
+
+Since we need to feed in data into a ML pipeline to make classification, we need preprocess our data, storing as a designed Data Schema like following form:
+
+``` source
+data/
+|-- apps/
+|   |-- com.miniclip.plagueinc/
+|   |   |-- plagueinc.apk
+|   |   |-- plagueinc/
+|   |   |   |-- AndroidManifest.xml
+|   |   |   |-- smali*/
+|   |
+|   |-- com.instagram.android/
+|   |   |-- instagram.apk
+|   |   |-- instagram/
+|   |   |   |-- AndroidManifest.xml
+|   |   |   |-- smali*/
+```
 
 #### Data Ingestion Pipeline
 
@@ -281,8 +301,8 @@ Under folder utils, building utility functions to download apk and transfer apks
   if you are using zsh
 
   ```zsh
-  echo $"export PATH=$PATH:<REPO_DIR>/utils" >> ~/.zshrc 
-  echo $"export PATH=$PATH:<REPO_DIR>/utils/jre1.8.0_241/bin" >> ~/.zshrc 
+  echo $"export PATH=$PATH:<REPO_DIR>/utils" >> ~/.zshrc
+  echo $"export PATH=$PATH:<REPO_DIR>/utils/jre1.8.0_241/bin" >> ~/.zshrc
   ```
 
 - [networkX](https://networkx.github.io/documentation/stable/index.html)
