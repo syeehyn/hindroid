@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Hindroid</title>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+        
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        
+        
+    </head>
+    <body class="vscode-light">
+        <h1 id="hindroid">Hindroid</h1>
+<p>This repository contains a mimic implementation and future implementation plan of the <a href="https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf">Hindroid</a> paper (DO&gt;&gt;&gt; I:<a href="https://doi.org/10.1145/3097983.3098026">10.1145/3097983.3098026</a>).</p>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>build Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data Ingesting</td>
+<td>In progress</td>
+</tr>
+<tr>
+<td>Feature Extraction</td>
+<td>Not Started</td>
+</tr>
+<tr>
+<td>ML Deployment</td>
+<td>Not Started</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><a href="#hindroid">Hindroid</a>
+<ul>
+<li><a href="#what-is-hindroid">What Is Hindroid</a></li>
+<li><a href="#what-is-the-data">What is the Data</a>
+<ul>
+<li><a href="#apk-and-smali">APK and Smali</a>
+<ul>
+<li><a href="#example">Example</a></li>
+</ul>
+</li>
+<li><a href="#data-design--collection">Data Design &amp; Collection</a>
+<ul>
+<li><a href="#abstract">Abstract</a></li>
+<li><a href="#pros">Pros</a></li>
+<li><a href="#cons">Cons</a></li>
+<li><a href="#past-efforts">Past Efforts</a></li>
+</ul>
+</li>
+<li><a href="#data-ingestion-process">Data Ingestion Process</a>
+<ul>
+<li><a href="#data-accessability">Data Accessability</a></li>
+<li><a href="#data-privacy">Data Privacy</a></li>
+<li><a href="#data-schemas">Data Schemas</a></li>
+<li><a href="#future-plan">Future Plan</a></li>
+</ul>
+</li>
+<li><a href="#data-ingestion-pipeline">Data Ingestion Pipeline</a>
+<ul>
+<li><a href="#data-sampling">Data Sampling</a></li>
+<li><a href="#data-downloading">Data Downloading</a></li>
+<li><a href="#converting-apks-to-smali">Converting apks to smali</a></li>
+<li><a href="#fetching-and-storing-data">Fetching and Storing Data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="what-is-hindroid">What Is Hindroid</h2>
+<p>The main task of Hindroid is to use machine learning, typically Graph Neural Network, to classify Android Apps as benign or malicious. Hindroid is designed to be an intelligent Android malware detection system based on structured heterogeneous information network.</p>
+<h2 id="what-is-the-data">What is the Data</h2>
+<h3 id="apk-and-smali">APK and Smali</h3>
+<p>The paper uses a static analysis method to identify malware, extracting source code from <a href="https://en.wikipedia.org/wiki/Android_application_package">.apk</a> files of apps. Because of reversibility of .apk files, we will decompile .apk files to <a href="https://limbenjamin.com/articles/analysing-smali-code.html">Smali Code</a> with  <a href="https://ibotpeaches.github.io/Apktool/">ApkTool</a>. We then use technique similar to Natural Language Processing to perform feature extraction outputting corresponding features, in particular, Nodes and Edges of the network.</p>
+<p>The paper is mainly targeting on API calls in smali code. <a href="https://en.wikipedia.org/wiki/Application_programming_interface">API</a>, Application Programming Interfaces, is an interface or communication protocol between parts of a computer program intended to simplify the implementation and maintenance of software. API calls are used by Android apps in order to access operating system functionality and system resources. API calls grant possibility to apps access asking system permission to perform low level system actions like sending HTTP requests to an unknown server.</p>
+<h4 id="example">Example</h4>
+<p>API calls via Smali</p>
+<pre><code class="language-smali"><div>invoke−virtual {v2, v3}, <span class="hljs-class">Ljava/lang/Runtime;</span>−&gt;exec(<span class="hljs-class">Ljava/lang/String ;</span>)
+<span class="hljs-class">Ljava / lang / Process ;</span>
+</div></code></pre>
+<pre><code class="language-smali"><div>invoke−virtual {v2}, <span class="hljs-class">Ljava / lang / Process;</span>−&gt;getInputStream () Ljava / io / InputStream
+</div></code></pre>
+<h3 id="data-design--collection">Data Design &amp; Collection</h3>
+<h4 id="abstract">Abstract</h4>
+<p>The data we use in replication of paper will consist of:</p>
+<ul>
+<li>Benign Android Application from <a href="http://apkpure.com">APKPure</a></li>
+<li>Malicious Android Application from our private source.</li>
+</ul>
+<p>The benign apps are from an online app platform (like Playstore) APKPure. The reason we use APKPure instead of Google Playstore that APKPure is more scraping-friendly than Playstore: Playstore requires a google account to purchase free app. We can use sitemap of APKPure to sample our benign apps. More importantly, APKPure is an apk recommending site which consists app pre-census step by editors. It can reduce the possibility to get malicious app in our benign app samples.
+The malicious Android Application are from our private source because of to avoid the data be used in malicious way.</p>
+<p>With the Benign sample and the Malicious sample, we have both positive and negative labels in our classification task, then we will perform ML algorithms for binary classification.</p>
+<p>While portions focused on learning graph techniques will also use
+examples from other languages (for example, python and java source code).
+Under folder utils, building utility functions to download apk and transfer apks smali code with python</p>
+<h4 id="pros">Pros</h4>
+<ul>
+<li>Using Smali as our data is appropriate with following reasons:
+<ul>
+<li>perform static analysis is a novel and secure way to perform malware detection. Rather than traditional detection on apks by running in a virtual machine or actual machine, it will not execute the apks. In this way, we can prevent the malware to actual damage our personal devices while we do malware detection.</li>
+<li>perform static analysis is an efficient way to process large task when we want to perform a mass malware detection over apps, not only in personal use but also in business use. Rather than detecting the malware by running the file, we scan through the code.</li>
+<li>perform static analysis is more robust with iteration. Iteration by feeding in new data and tuning parameter, the classification task will follow the trend of malware and detect them precisely.</li>
+</ul>
+</li>
+<li>Using APKPure as our benign data is appropriate with following reasons:
+<ul>
+<li>APKPure is a secondary app store rather than Playstore, which has significantly less census on app release. Thus, APKPure's samples are more trust-worthy and can be good positive samples.</li>
+<li>APKPure is scratching-friendly. Compared to Playstore, which requires a google account to download and purchase apps, APKPure does not require an accont to download apks. Moreover, APKPure provides a sitemap on the robots.txt. We can use the sitemap to easier sample our dataset.</li>
+</ul>
+</li>
+<li>The benign Android Application and Malware samples are a good match to solve our classification task. As mentioned above, APKPure
+<ul>
+<li>With balanced of positive and negative samples of apk, we can build a robust classifier to identify malware and benign apps.</li>
+</ul>
+</li>
+</ul>
+<h4 id="cons">Cons</h4>
+<ul>
+<li>Limitation of Benign Sample
+<ul>
+<li>Although APKPure is more trust-worthy than Google Playstore, it is still questionable that every app in APKPure is benign. If a large amount of our positive samples are negative, our classifier will be less robust even invalidated. We must aware the shortcoming that not every app in APKPure is benign.</li>
+<li>Since we can only download free app from APKPure, there is a big limitation of our data design: we cannot access the paid apps, which is far away from our real world scenario. Despite the low malware possibility of paid apps, we cannot neglect the sample of paid apps.</li>
+</ul>
+</li>
+<li>Limitation of Malicious Sample
+<ul>
+<li>The apps from APKPure is updated over time, but our malicious sample is from historical database. There is a time gap between our Benign sample and Malicious sample, and it is not easy to keep malicious sample updated.</li>
+<li>The malicious sample is much less than the benign sample. It is not easy to make two sample balanced.</li>
+</ul>
+</li>
+<li>Limitation of Only Detecting API calls
+<ul>
+<li>Our paper only targets on API calls, there exit malicious apps contain non-suspect API calls, which cannot be detected by our classifier. Also, the paper neglect to analysis the relationship between each method and class.</li>
+<li>The repeat use of a specific API call will not feed in to the feature extraction of the paper, which will lead an inaccuracy of classifier.</li>
+</ul>
+</li>
+</ul>
+<h4 id="past-efforts">Past Efforts</h4>
+<ul>
+<li>Traditional Approach
+<ul>
+<li>The traditional approach of malware detection or security threats is to scan the signature of the apps compares to the database of identified malicious apps. This approach is harder to iterate because it requires to keep update the malware database.</li>
+</ul>
+</li>
+<li>Dynamic Analysis
+<ul>
+<li>Others using dynamic analysis to perform malware detection. Because this method requires an active virtual machine to run the apps, it may have security concern and it is more computationally heavy.</li>
+</ul>
+</li>
+<li>Static Analysis
+<ul>
+<li>Rather than extracting API calls using a structured heterogeneous information network, some constructed similarities between apps with ML to identify malware.</li>
+</ul>
+</li>
+</ul>
+<h3 id="data-ingestion-process">Data Ingestion Process</h3>
+<h4 id="data-accessability">Data Accessability</h4>
+<ul>
+<li>Data Original
+<ul>
+<li>Benign Android Application from <a href="http://apkpure.com">APKPure</a></li>
+<li>Malicious Android Application from our private source.</li>
+</ul>
+</li>
+<li>Legal Issues
+<ul>
+<li>
+<p>According to APKPure's <a href="https://apkpure.com/terms.html">Term of Use</a></p>
+<p><code>Note: APKPure.com is NOT associated or affiliated with Google, Google Play or Android in any way. Android is a trademark of Google Inc. All the apps &amp; games are property and trademark of their respective developer or publisher and for HOME or PERSONAL use ONLY. Please be aware that APKPure.com ONLY SHARE THE ORIGINAL APK FILE FOR FREE APPS. ALL THE APK FILE IS THE SAME AS IN GOOGLE PLAY WITHOUT ANY CHEAT, UNLIMITED GOLD PATCH OR ANY OTHER MODIFICATIONS.</code></p>
+<p>it specifies APKPure's data is only for personal use. Since our project is a personal capstone project without commercial purpose. We are free of legal Issues in data use.</p>
+</li>
+<li>
+<p>According to APKPure's <a href="https://apkpure.com/robots.txt">robots.txt</a>, <a href="https://apkpure.com/sitemap.xml">sitemap.xml</a> is obtained for scraping use. Thus, we are free of violation of scraping rule.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="data-privacy">Data Privacy</h4>
+<p>*subject to change</p>
+<ul>
+<li>According to APKPure's <a href="https://apkpure.com/privacy-policy.html">Privacy Policy</a>. If necessary, we will provide our privacy information as policy requests.</li>
+<li>For data we collected, since it is public by APKPure, we are free of privacy concern. Regardlessly, we will still anonymise our data by following steps:
+<ul>
+<li>anonymise apk url with sha256 encryption.</li>
+<li>anonymise app name with two-way hash function.</li>
+<li>anonymise apk file names ,if necessary, with sha256 encryption.</li>
+<li>anonymise apk developer with two-way hash function.</li>
+<li>anonymise apk signature ,if necessary, with sha256 encryption.</li>
+<li>anonymise apk category with two-way hash function.</li>
+</ul>
+</li>
+</ul>
+<h4 id="data-schemas">Data Schemas</h4>
+<ul>
+<li>
+<p>Since we need to feed in data into a ML pipeline to make classification, we need preprocess our data, storing as a designed Data Schema like following form:</p>
+<pre><code class="language-source"><code><div>data/
+|-- plagueinc/
+|   |-- plagueinc.apk
+|   |-- plagueinc/
+|   |   |-- AndroidManifest.xml
+|   |   |-- smali*/
+|-- instagram/
+|   |-- instagram.apk
+|   |-- instagram/
+|   |   |-- AndroidManifest.xml
+|   |   |-- smali*/
+</div></code></code></pre>
+<p>Since apks are fairly large, and we are interested in the API call of every app. We may only keep the file AndroidManifest.xml and smali folders. For each app, after extraction of smali, we will delete the .apk file</p>
+</li>
+<li>
+<p>For each app, we will create an overall metadata.csv to store their feature according their corresponding sitemap.</p>
+<p>The metadata will consist following columns:</p>
+<ul>
+<li><code>loc</code>: the url of specific app</li>
+<li><code>lastmod</code>: the datetime of the last update of the app</li>
+<li><code>changefreq</code>: check for update frequency</li>
+<li><code>priority</code>: the priority group of the app</li>
+<li><code>sitemap_url</code>: the url in sitemap.xml</li>
+</ul>
+<p>Metadata is a map of what we will sample according to, we can do different sampling with the matadata.</p>
+</li>
+</ul>
+<h4 id="future-plan">Future Plan</h4>
+<p>We plan to add following features (subject to change) to the sample of metadata in feature extraction section:</p>
+<ul>
+<li>API call adjacency matrices</li>
+<li>developer info of specific app</li>
+<li>developer signiture</li>
+<li>name of the app</li>
+<li>first category (e.g. Game) of the app</li>
+<li>secont category (e.g. Game type) of the app</li>
+<li>etc.</li>
+</ul>
+<h3 id="data-ingestion-pipeline">Data Ingestion Pipeline</h3>
+<h4 id="data-sampling">Data Sampling</h4>
+<p>get the list of apks url to download from <code>sitemap.xml</code></p>
+<ul class="contains-task-list">
+<li class="task-list-item">
+<p><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> Initialize <code>metadata.csv</code> from <code>sitemap.xml</code></p>
+<p>Initialize a metadata gives us a hint what data to sample:</p>
+</li>
+<li class="task-list-item">
+<p><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> Naive sampling</p>
+<p>random sample same amount of apks from APKPure to the malware sample.</p>
+<p><strong>usage</strong></p>
+<p>sampling 1000 benigned apks</p>
+<pre><code class="language-python"><div><span class="hljs-keyword">import</span> json
+sys.path.append(<span class="hljs-string">'./utils'</span>)
+<span class="hljs-keyword">import</span> utils
+<span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
+cfg = json.load(open(<span class="hljs-string">'./sitemap.json'</span>))
+utils.create_sitemap_df(**cfg) <span class="hljs-comment">#Create a sitemap dataframe with corresponding info.</span>
+metadata = pd.read_csv(<span class="hljs-string">'./data/metadata/metadata.csv'</span>)
+metadata.sample(<span class="hljs-number">1000</span>)
+urls = metadata.loc
+</div></code></pre>
+</li>
+<li class="task-list-item">
+<p><input class="task-list-item-checkbox" disabled="" type="checkbox"> Category Sampling *will be inplement after feature extraction</p>
+<p>sampling same number of apks according to corresponding category from APKPure with the malware sample.</p>
+<p>First sample a smaller set from sitemap, then fetch the category of each apps by requesting apps' links. With each category get the even matched links to sample.</p>
+<p><strong>usage</strong></p>
+<pre><code class="language-python"><div><span class="hljs-comment">###TODO</span>
+</div></code></pre>
+</li>
+<li class="task-list-item">
+<p><input class="task-list-item-checkbox" disabled="" type="checkbox"> Future Sample Methods Coming Soon...</p>
+<p>update after observation of first two sampling methods.</p>
+</li>
+</ul>
+<h4 id="data-downloading">Data Downloading</h4>
+<ul class="contains-task-list">
+<li class="task-list-item">
+<p><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> Given a <code>app-url.json</code> to execute download.</p>
+<p>For example, to download <code>facebook</code> and <code>Plague Inc.</code> apps to <code>./data</code> directory the <code>app-url.json</code> may look like:</p>
+<pre><code class="language-json"><div>{
+<span class="hljs-attr">"data_dir"</span>: <span class="hljs-string">"./data"</span>,
+<span class="hljs-attr">"urls"</span>: [
+    <span class="hljs-string">"https://apkpure.com/plague-inc/com.miniclip.plagueinc"</span>,
+    <span class="hljs-string">"https://apkpure.com/instagram/com.instagram.android"</span>
+    ],
+<span class="hljs-attr">"verbose"</span>: <span class="hljs-number">1</span>
+}
+</div></code></pre>
+<p><strong>usage</strong></p>
+<pre><code class="language-python"><div><span class="hljs-keyword">import</span> json
+<span class="hljs-keyword">import</span> re
+sys.path.append(<span class="hljs-string">'./utils'</span>)
+<span class="hljs-keyword">import</span> utils
+cfg = json.load(open(<span class="hljs-string">'./demo/app-url.json'</span>))
+urls, fp = cfg[<span class="hljs-string">'urls'</span>], cfg[<span class="hljs-string">'data_dir'</span>]
+<span class="hljs-keyword">for</span> url <span class="hljs-keyword">in</span> urls:
+  app = re.findall(<span class="hljs-string">r'https:\/\/apkpure.com\/(.*?)\/'</span>, url)[<span class="hljs-number">0</span>]
+  utils.download_app(url, fp, app)
+</div></code></pre>
+</li>
+</ul>
+<h4 id="converting-apks-to-smali">Converting apks to smali</h4>
+<ul class="contains-task-list">
+<li class="task-list-item">
+<p><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> APK -&gt; Smali using apktool</p>
+<p>check the documentation of <a href="https://ibotpeaches.github.io/Apktool/documentation/">APKTool</a></p>
+</li>
+</ul>
+<h4 id="fetching-and-storing-data">Fetching and Storing Data</h4>
+<p>The complete pipeline of getting both metadata and downloading apk and decompose them into data schemas.</p>
+<p><a href="./demo/demo.ipynb">Demo Notebook</a></p>
+<ul class="contains-task-list">
+<li class="task-list-item">
+<p><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> fetching data consists downloading apk and decompose them into data schemas.</p>
+<p><strong>usage</strong></p>
+<pre><code class="language-python"><div><span class="hljs-keyword">import</span> json
+sys.path.append(<span class="hljs-string">'./utils'</span>)
+<span class="hljs-keyword">import</span> utils
+cfg = json.load(open(<span class="hljs-string">'./demo/app-url.json'</span>))
+utils.get_data(**cfg)
+<span class="hljs-meta">&gt;&gt;&gt; </span>fetched ./data/plague-inc/plague-inc.apk, start decoding
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Using Apktool <span class="hljs-number">2.4</span><span class="hljs-number">.1</span> on plague-inc.apk
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Loading resource table...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Decoding AndroidManifest.xml <span class="hljs-keyword">with</span> resources...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Loading resource table <span class="hljs-keyword">from</span> file: /Users/syeehyn/Library/apktool/framework/<span class="hljs-number">1.</span>apk
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Regular manifest package...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Decoding file-resources...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Decoding values */* XMLs...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Baksmaling classes.dex...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Copying assets <span class="hljs-keyword">and</span> libs...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Copying unknown files...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Copying original files...
+
+fetched ./data/instagram/instagram.apk, start decoding
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Using Apktool <span class="hljs-number">2.4</span><span class="hljs-number">.1</span> on instagram.apk
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Loading resource table...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Decoding AndroidManifest.xml <span class="hljs-keyword">with</span> resources...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Loading resource table <span class="hljs-keyword">from</span> file: /Users/syeehyn/Library/apktool/framework/<span class="hljs-number">1.</span>apk
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Regular manifest package...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Decoding file-resources...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Decoding values */* XMLs...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Baksmaling classes.dex...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Baksmaling classes2.dex...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Baksmaling classes3.dex...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Baksmaling classes4.dex...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Copying assets <span class="hljs-keyword">and</span> libs...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Copying unknown files...
+<span class="hljs-meta">&gt;&gt;&gt; </span>I: Copying original files...
+</div></code></pre>
+</li>
+<li class="task-list-item">
+<p><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> fetching the sitemap DataFrame</p>
+<p><strong>usage</strong></p>
+<pre><code class="language-python"><div><span class="hljs-keyword">import</span> json
+sys.path.append(<span class="hljs-string">'./utils'</span>)
+<span class="hljs-keyword">import</span> utils
+utils.setup_env()
+cfg = json.load(open(<span class="hljs-string">'./demo/sitemap.json'</span>))
+utils.create_sitemap_df(**cfg)
+</div></code></pre>
+</li>
+</ul>
+
+    </body>
+    </html>

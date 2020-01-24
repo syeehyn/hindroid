@@ -16,7 +16,6 @@ def setup_env():
         os.mkdir('./data')
 def get_xmls(url):
     """[get xml of the sitemap]
-    
     Returns:
         [list] -- [list of xml.gz]
     """    
@@ -26,7 +25,6 @@ def get_xmls(url):
     return [i.text for i in groups]
 def create_xml_df(xml):
     """[get the data frame of xml.gz]
-    
     Arguments:
         xml {[string]} -- [the gz compression of xml link]
     
@@ -63,7 +61,6 @@ def create_sitemap_df(**cfg):
     metadata.to_csv(fp + '/metadata.csv',index = False)
 def download_app(url, op, app):
     """[download a apk file to the output path]
-    
     Arguments:
         url {[string]} -- [url link of the file]
         op {[string]} -- [output file path]
