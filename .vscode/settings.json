@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "/Users/syeehyn/opt/anaconda3/envs/scipy-ml/bin/python"
+    "python.pythonPath": "/Users/syeehyn/opt/anaconda3/envs/dask-env/bin/python",
+    "git.ignoreLimitWarning": true
 }

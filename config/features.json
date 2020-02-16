@@ -1,0 +1,5 @@
+{
+    "fp": "../data/raw/smali",
+    "map_dir": "../data/raw/app_map.json",
+    "op": "../data/interim/appfeature"
+}

@@ -1,0 +1,7 @@
+{
+    "mode": "random", 
+    "size": 150, 
+    "op": "../config/random_sampling_urls.json", 
+    "metadata_dir": "../data/interim/metadata/metadata.csv", 
+    "fp": "../data"
+}
