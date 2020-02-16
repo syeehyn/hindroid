@@ -3,6 +3,21 @@ USER root
 # python3 setup
 RUN apt-get update && apt-get install -y graphviz
 
-RUN git clone https://github.com/dask/dask-tutorial.git ./dask-tutorial
-RUN cd dask-tutorial && conda env update -f binder/environment.yml && . binder/postBuild && cd ..
-RUN rm dask-tutorial/github_deploy_key_dask_dask_tutorial.enc
+RUN conda install -c anaconda --yes  \
+            snakeviz  \
+            distributed \
+            ipywidgets \
+    && conda install -c conda-forge --yes \
+            nodejs \
+            jupyterlab \
+            dask-ml \
+            toolz \
+            dask-labextension \
+            s3fs  \
+            fastparquet \
+            python-graphviz \
+    && conda install --yes \
+            dask \
+            h5py \
+            bokeh
+    
