@@ -1,5 +1,6 @@
 {
-    "fp" : "../data/interim/appfeature/*.csv",
+    "fp_b" : "../data/interim/appfeature/*.csv",
+    "fp_m" : "../data/interim/malware_feature/*.csv",
     "ref": "../data/processed/matrix_A/ref.json",
     "mat": "../data/processed/matrix_A/mat.npz"
 }
