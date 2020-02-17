@@ -55,7 +55,7 @@ def get_apps_info(**cfg):
         op {[string]} -- [output file directory]
     Returns:
         [type] -- [description]
-    """    
+    """
     client = Client()
     client.restart()
     print("Dashboard Address: " + 'http://127.0.0.1:' + str(client.scheduler_info()['services']['dashboard'])+'/status')

@@ -1,0 +1,14 @@
+{
+"dir": "../data",
+"urls": [
+    "https://apkpure.com/plague-inc/com.miniclip.plagueinc",
+    "https://apkpure.com/instagram/com.instagram.android",
+    "https://apkpure.com/youtube/com.google.android.youtube",
+    "https://apkpure.com/google-chrome-fast-secure/com.android.chrome",
+    "https://apkpure.com/facebook/com.facebook.katana",
+    "https://apkpure.com/spotify-music/com.spotify.music"
+    ],
+"appmap": "../data/raw/testmap.json",
+"verbose": true,
+"clean": true
+}

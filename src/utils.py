@@ -148,7 +148,7 @@ def get_data(**cfg):
     Returns:
         [string] -- [success message]
     """  
-    fp, urls, verbose, clean = cfg['dir'], cfg['urls'], cfg["verbose"], cfg['clean']
+    fp, urls, verbose, clean, appmap = cfg['dir'], cfg['urls'], cfg["verbose"], cfg['clean'], cfg['appmap']
     if not os.path.exists(fp + '/'):
         os.mkdir(fp + '/')
     if not os.path.exists(fp + '/raw/'):
@@ -157,6 +157,16 @@ def get_data(**cfg):
         os.mkdir(fp + '/raw/apps')
     if not os.path.exists(fp + '/raw/smali'):
         os.mkdir(fp + '/raw/smali')
+    if not os.path.exists(fp + '/interim/'):
+        os.mkdir(fp + '/interim/')
+    if not os.path.exists(fp + '/interim/appfeature'):
+        os.mkdir(fp + '/raw/appfeature')
+    if not os.path.exists(fp + '/interim/metadata'):
+        os.mkdir(fp + '/raw/metadata')
+    if not os.path.exists(fp + '/processed/'):
+        os.mkdir(fp + '/processed')
+    if not os.path.exists(fp + '/processed/matrix_A'):
+        os.mkdir(fp + '/processed/matrix_A')
     client = Client()
     client = client.restart()
     NUM_WORKER = int(len(client.scheduler_info()['workers']))
@@ -180,7 +190,7 @@ def get_data(**cfg):
         app = dask.compute(proc_extract_app)[0]
         for j in app:
             apps[j]['decode'] = 'done'
-    app_map = os.path.join(fp+'/raw', 'app_map.json')
+    app_map = appmap
     with open(app_map, 'w') as fp:
         json.dump(apps, fp)
     return 'apk download and decode finished'
