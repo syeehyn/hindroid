@@ -57,7 +57,6 @@ def get_apps_info(**cfg):
         [type] -- [description]
     """
     client = Client()
-    client.restart()
     print("Dashboard Address: " + 'http://127.0.0.1:' + str(client.scheduler_info()['services']['dashboard'])+'/status')
     fp, map_dir, op = cfg['fp'], cfg['map_dir'], cfg['op']
     app_map = pd.Series(json.load(open(map_dir))).apply(lambda x: x['decode'])
