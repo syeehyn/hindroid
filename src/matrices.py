@@ -9,15 +9,18 @@ from scipy import sparse
 def matrix_A(**cfg):
     """[summary]
     Arguments:
-        fp {[string]} -- [csv file directory]
+        fp_b {[string]} -- [benign csv file directory]
+        fp_m {[string]} -- [malware csv file directory]
         ref {[string]} -- [output reference file directory (.json)]
         mat {[string]} -- [output matrix file directory (.npz)]
     Returns:
         [string] -- [succesful message]
     """    
-    client = Client(n_workers = 8)
-    fp, ref, mat= cfg['fp'], cfg['ref'], cfg['mat']
-    df = dd.read_csv(fp)
+    client = Client()
+    fp_b, fp_m, ref, mat= cfg['fp_b'], cfg['fp_m'], cfg['ref'], cfg['mat']
+    df_b = dd.read_csv(fp_b)
+    df_m = dd.read_csv(fp_m)
+    df = df_b.append(df_m).reset_index()
     df['api'] = (df['package'] + '->' + df['method_name'])
     app_set = df.groupby(['app']).api.apply(lambda x: set(x), meta = 'set').compute()
     apis = df.api.unique().compute()

@@ -8,6 +8,7 @@ import pandas as pd
 from multiprocess import Pool
 from dask.distributed import Client
 from dask import delayed
+import shutil
 import json
 import dask
 import logging
@@ -69,3 +70,18 @@ def get_apps_info(**cfg):
                 df['app'] = app
                 df.to_csv(os.path.join(op, app + '.csv'), index = False)
     return 'api calls extracted'
+
+def extract_malware(**cfg):
+    fp, op= cfg['fp'], cfg['op']
+    apps = [i.split('/')[-1] for i in glob(fp + '/*')]
+    apps = {i: {"download": "success", "decode": "done"}for i in apps}
+    os.mkdir("tmp")
+    with open("tmp/malwareapps.json", 'w') as f:
+        json.dump(apps, f)
+    config = {
+        "fp": fp,
+        "map_dir": "tmp/malwareapps.json",
+        "op": op
+    }
+    get_apps_info(**config)
+    shutil.rmtree("tmp")
