@@ -59,6 +59,8 @@ def get_apps_info(**cfg):
     client = Client()
     print("Dashboard Address: " + 'http://127.0.0.1:' + str(client.scheduler_info()['services']['dashboard'])+'/status')
     fp, map_dir, op = cfg['fp'], cfg['map_dir'], cfg['op']
+    if not os.path.exists(map_dir):
+        return 'no app need to be extracted'
     app_map = pd.Series(json.load(open(map_dir))).apply(lambda x: x['decode'])
     applist = list(app_map[app_map == 'done'].index)
     op_csv = [i.split('/')[-1][:-4] for i in glob(op + '/*.csv')]
@@ -68,6 +70,7 @@ def get_apps_info(**cfg):
             if len(df) != 0:
                 df['app'] = app
                 df.to_csv(os.path.join(op, app + '.csv'), index = False)
+    os.remove(map_dir)
     return 'api calls extracted'
 
 def extract_malware(**cfg):
