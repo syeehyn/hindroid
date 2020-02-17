@@ -56,11 +56,13 @@ def get_apps_info(**cfg):
     Returns:
         [type] -- [description]
     """
-    client = Client()
-    print("Dashboard Address: " + 'http://127.0.0.1:' + str(client.scheduler_info()['services']['dashboard'])+'/status')
     fp, map_dir, op = cfg['fp'], cfg['map_dir'], cfg['op']
     if not os.path.exists(map_dir):
-        return 'no app need to be extracted'
+        print('no app need to be extracted')
+        return
+    client = Client()
+    client.restart()
+    print("Dashboard Address: " + 'http://127.0.0.1:' + str(client.scheduler_info()['services']['dashboard'])+'/status')
     app_map = pd.Series(json.load(open(map_dir))).apply(lambda x: x['decode'])
     applist = list(app_map[app_map == 'done'].index)
     op_csv = [i.split('/')[-1][:-4] for i in glob(op + '/*.csv')]
@@ -71,7 +73,8 @@ def get_apps_info(**cfg):
                 df['app'] = app
                 df.to_csv(os.path.join(op, app + '.csv'), index = False)
     os.remove(map_dir)
-    return 'api calls extracted'
+    print('api calls extracted')
+    return
 
 def extract_malware(**cfg):
     fp, op= cfg['fp'], cfg['op']
@@ -87,3 +90,5 @@ def extract_malware(**cfg):
     }
     get_apps_info(**config)
     shutil.rmtree("tmp")
+    print("all malware apps extracted")
+    return

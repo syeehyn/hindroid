@@ -168,6 +168,7 @@ def get_data(**cfg):
     if not os.path.exists(fp + '/processed/matrix_A'):
         os.mkdir(fp + '/processed/matrix_A')
     client = Client()
+    client.restart()
     NUM_WORKER = int(len(client.scheduler_info()['workers']))
     get_app_name = lambda url: re.findall(r'https:\/\/apkpure.com\/(.*?)\/', url)[0]
     downloading = [delayed(_download_app)(url, fp, get_app_name(url)) for url in urls]
