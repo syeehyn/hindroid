@@ -1,2 +1,6 @@
 
 data
+src/__pycache__
+notebooks/.ipynb_checkpoints
+notebooks/dask-worker-space
+.ipynb_checkpoints
