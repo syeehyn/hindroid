@@ -36,6 +36,8 @@ ML Deployment | In Progress
         - [P Matrix (In Progress)](#p-matrix-in-progress)
         - [I Matrix (In Progress)](#i-matrix-in-progress)
     - [ML Deployment](#ml-deployment)
+      -  [Baseline Model](#baseline-model)
+      -  [Future](#future)
 - [Usage Instruction](#usage-instruction)
   - [Use run.py](#use-runpy)
   - [Use Library Code Directly](#use-library-code-directly)
@@ -311,7 +313,7 @@ The complete pipeline of getting both metadata and downloading apk and decompose
   [Demo Notebook](notebooks/Step5_Construct_Matrix.ipynb)
 
 #### B Matrix (In Progress)
-
+  
   $b_{ij}$ is defined as:
   "If $api_i$ and $api_j$ co-exist in the same code block, then $b_{ij}$ = 1; otherwise, $b_{ij}$ = 0."
 
@@ -329,6 +331,8 @@ The complete pipeline of getting both metadata and downloading apk and decompose
 
 ## ML Deployment
 
+### Baseline Model
+
 - [x] Baseline Model
 
     [Baseline Model Notebook](notebooks/Step6_Baseline_Model.ipynb)
@@ -336,6 +340,8 @@ The complete pipeline of getting both metadata and downloading apk and decompose
     The baseline model used the A Matrix above fed as feature. Specifically, it uses A.A.T to make number of apps dimensions feature matrix feeding into Naive SVC. I chose accuracy as my baseline model since accuracy is a mostly common used metrics in ML, and it also used in Hindroid paper. (may change when deeper ML Deployment evolved later)
 
     The baseline model has roughly 64% accuracy, which perform better than I expected.
+
+### Future
 
 - [ ] planning
 
