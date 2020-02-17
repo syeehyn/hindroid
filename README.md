@@ -272,7 +272,6 @@ The complete pipeline of getting both metadata and downloading apk and decompose
 
   ```bash
   #fetching data
-  cd src
   python run.py data
   ```
 
@@ -380,7 +379,6 @@ Parameter Json
 
 ```bash
 #fetching data
-cd src
 python run.py data
 ```
 
