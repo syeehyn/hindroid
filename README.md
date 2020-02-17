@@ -4,44 +4,63 @@ This repository contains a mimic implementation and future implementation plan o
 
 Project|build Status
 ---|---
-Data Ingesting|In progress
-Feature Extraction| Not Started
-ML Deployment | Not Started
+Data Ingesting| Success
+Feature Extraction| Success
+ML Deployment | In Progress
 
-- [Hindroid](#hindroid)
-  - [What Is Hindroid](#what-is-hindroid)
-  - [What is the Data](#what-is-the-data)
-    - [APK and Smali](#apk-and-smali)
-      - [Example](#example)
-    - [Data Design & Collection](#data-design--collection)
-      - [Abstract](#abstract)
-      - [Pros](#pros)
-      - [Cons](#cons)
-      - [Past Efforts](#past-efforts)
-    - [Data Ingestion Process](#data-ingestion-process)
-      - [Data Accessability](#data-accessability)
-      - [Data Privacy](#data-privacy)
-      - [Data Schemas](#data-schemas)
-      - [Future Plan](#future-plan)
-    - [Data Ingestion Pipeline](#data-ingestion-pipeline)
-      - [Data Sampling](#data-sampling)
-      - [Data Downloading](#data-downloading)
-      - [Converting apks to smali](#converting-apks-to-smali)
-      - [Fetching and Storing Data](#fetching-and-storing-data)
-  - [Feature Extraction](#feature-extraction)
-  - [Machine Learning](#machine-learning)
-  - [Prerequisite](#prerequisite)
-  - [References](#references)
+- Project Abstract
+  - [Hindroid](#hindroid)
+    - [What Is Hindroid](#what-is-hindroid)
+    - [What is the Data](#what-is-the-data)
+      - [APK and Smali](#apk-and-smali)
+        - [Example](#example)
+      - [Data Design & Collection](#data-design--collection)
+        - [Abstract](#abstract)
+        - [Pros](#pros)
+        - [Cons](#cons)
+        - [Past Efforts](#past-efforts)
+      - [Data Ingestion Process](#data-ingestion-process)
+        - [Data Accessability](#data-accessability)
+        - [Data Privacy](#data-privacy)
+        - [Data Schemas](#data-schemas)
+        - [Future Plan](#future-plan)
+      - [Data Ingestion Pipeline](#data-ingestion-pipeline)
+        - [Data Sampling](#data-sampling)
+        - [Data Ingesting](#data-ingesting)
+        - [Fetching and Storing Data](#fetching-and-storing-data)
+    - [Feature Extraction](#feature-extraction)
+      - [API Call Extraction](#api-call-extraction)
+      - [Matrix Construction](#matrix-construction)
+        - [A Matrix](#a-matrix)
+        - [B Matrix (In Progress)](#b-matrix-in-progress)
+        - [P Matrix (In Progress)](#p-matrix-in-progress)
+        - [I Matrix (In Progress)](#i-matrix-in-progress)
+    - [ML Deployment](#ml-deployment)
+- [Usage Instruction](#usage-instruction)
+  - [Use run.py](#use-runpy)
+  - [Use Library Code Directly](#use-library-code-directly)
+- [Description of Contents](#description-of-contents)
+  - [src](#src)
+  - [config](#config)
+  - [data](#data)
+  - [Dockerfile](#dockerfile)
+  - [notebooks](#notebooks)
+- [Prerequisite](#prerequisite)
+  - [Packages](#packages)
+  - [Use Dockerfile](#use-dockerfile)
+- [References](#references)
 
 ## What Is Hindroid
 
 The main task of Hindroid is to use machine learning, typically Graph Neural Network, to classify Android Apps as benign or malicious. Hindroid is designed to be an intelligent Android malware detection system based on structured heterogeneous information network.
 
+------------------------------------------------------------------------------------------------
+
 ## What is the Data
 
 ### APK and Smali
 
-The paper uses a static analysis method to identify malware, extracting source code from [.apk](https://en.wikipedia.org/wiki/Android_application_package) files of apps. Because of reversibility of .apk files, we will decompile .apk files to [Smali Code](https://limbenjamin.com/articles/analysing-smali-code.html) with  [ApkTool](https://ibotpeaches.github.io/Apktool/). We then use technique similar to Natural Language Processing to perform feature extraction outputting corresponding features, in particular, Nodes and Edges of the network.
+The paper uses a static analysis method to identify malware, extracting source code from [.apk](https://en.wikipedia.orwiki/Android_application_package) files of apps. Because of reversibility of .apk files, we will decompile .apk files to [Smali Code](https://limbenjamin.com/articles/analysing-smali-code.html) with  [ApkTool](https://ibotpeaches.github.io/Apktool/). We then use technique similar to Natural Language Processing to perform feature extraction outputting corresponding features, in particular, Nodes and Edges of the network.
 
 The paper is mainly targeting on API calls in smali code. [API](https://en.wikipedia.org/wiki/Application_programming_interface), Application Programming Interfaces, is an interface or communication protocol between parts of a computer program intended to simplify the implementation and maintenance of software. API calls are used by Android apps in order to access operating system functionality and system resources. API calls grant possibility to apps access asking system permission to perform low level system actions like sending HTTP requests to an unknown server.
 
@@ -143,16 +162,28 @@ Under folder utils, building utility functions to download apk and transfer apks
 
   ``` source
   data/
-  |-- plagueinc/
-  |   |-- plagueinc.apk
-  |   |-- plagueinc/
-  |   |   |-- AndroidManifest.xml
-  |   |   |-- smali*/
-  |-- instagram/
-  |   |-- instagram.apk
-  |   |-- instagram/
-  |   |   |-- AndroidManifest.xml
-  |   |   |-- smali*/
+  |-- raw/
+  |   |-- app_map.json
+  |   |-- apps/
+  |   |   |-- instagram/
+  |   |-- smali/
+  |   |   |-- instagram/
+  |-- interim/
+  |   |-- appfeature/
+  |   |   |-- instagram.csv
+  |   |-- metadata/
+  |   |   |-- metadata.csv
+  |-- external/
+  |-- malware/
+  |   |-- smali/
+  |   |   |-- xxxxx/
+  |-- processed/
+  |   |-- matrix_A/
+  |   |   |-- matrix_A.npz
+  |   |   |-- ref.json
+  |   |-- matrix_B/
+  |   |   |-- matrix_B.npz
+  |   |   |-- ref.json
   ```
 
   Since apks are fairly large, and we are interested in the API call of every app. We may only keep the file AndroidManifest.xml and smali folders. For each app, after extraction of smali, we will delete the .apk file
@@ -168,18 +199,6 @@ Under folder utils, building utility functions to download apk and transfer apks
   - `sitemap_url`: the url in sitemap.xml
 
   Metadata is a map of what we will sample according to, we can do different sampling with the metadata.
-
-#### Future Plan
-
-We plan to add following features (subject to change) to the sample of metadata in feature extraction section:
-
-- API call adjacency matrices
-- developer info of specific app
-- developer signature
-- name of the app
-- first category (e.g. Game) of the app
-- second category (e.g. Game type) of the app
-- etc.
 
 ### Data Ingestion Pipeline
 
@@ -197,19 +216,7 @@ We plan to add following features (subject to change) to the sample of metadata 
 
     **usage**
 
-    sampling 1000 benign apks
-
-    ```python
-    import json
-    sys.path.append('./utils')
-    import utils
-    import pandas as pd
-    cfg = json.load(open('./sitemap.json'))
-    utils.create_sitemap_df(**cfg) #Create a sitemap DataFrame with corresponding info.
-    metadata = pd.read_csv('./data/metadata/metadata.csv')
-    metadata.sample(1000)
-    urls = metadata.loc
-    ```
+  see the example in this [notebook](notebooks/Step2_Sampling_Apps.ipynb).
 
 - [ ] Category Sampling *will be implement after feature extraction
   - sampling same number of apks according to corresponding category from APKPure with the malware sample.
@@ -225,151 +232,292 @@ We plan to add following features (subject to change) to the sample of metadata 
   
   update after observation of first two sampling methods.
   
-#### Data Downloading
+#### Data Ingesting
 
 - [x] Given a `app-url.json` to execute download.
+- [x] APK -> Smali using apktool
 
-    For example, to download `facebook` and `Plague Inc.` apps to `./data` directory the `app-url.json` may look like:
 
-  ```json
-  {
-  "data_dir": "./data",
-  "urls": [
-      "https://apkpure.com/plague-inc/com.miniclip.plagueinc",
-      "https://apkpure.com/instagram/com.instagram.android"
-      ],
-  "verbose": 1
-  }
-  ```
+ check the documentation of [APKTool](https://ibotpeaches.github.io/Apktool/documentation/) for further details
+
+  For example, to download `facebook` and `Plague Inc.` apps to `./data` directory the `app-url.json` may look like:
+
+    ```json
+    {
+    "data_dir": "./data",
+    "urls": [
+        "https://apkpure.com/plague-inc/com.miniclip.plagueinc",
+        "https://apkpure.com/instagram/com.instagram.android"
+        ],
+    "appmap": "../data/raw/testmap.json",
+    "verbose": 1,
+    "clean": true
+    }
+    ```
 
    **usage**
 
-  ```python
-  import json
-  import re
-  sys.path.append('./utils')
-  import utils
-  cfg = json.load(open('./demo/app-url.json'))
-  urls, fp = cfg['urls'], cfg['data_dir']
-  for url in urls:
-    app = re.findall(r'https:\/\/apkpure.com\/(.*?)\/', url)[0]
-    utils.download_app(url, fp, app)
-  ```
+  see the example in this [notebook](notebooks/Step3_Downloading_Decoding_APK.ipynb)
 
-#### Converting apks to smali
-
-- [x] APK -> Smali using apktool
-
-  check the documentation of [APKTool](https://ibotpeaches.github.io/Apktool/documentation/)
 
 #### Fetching and Storing Data
 
 The complete pipeline of getting both metadata and downloading apk and decompose them into data schemas.
 
-[Demo Notebook](./demo/demo.ipynb)
-
-- [x] fetching data consists downloading apk and decompose them into data schemas.
-
   **usage**
 
-  ```python
-  import json
-  sys.path.append('./utils')
-  import utils
-  cfg = json.load(open('./demo/app-url.json'))
-  utils.get_data(**cfg)
-  >>> fetched ./data/plague-inc/plague-inc.apk, start decoding
-  >>> I: Using Apktool 2.4.1 on plague-inc.apk
-  >>> I: Loading resource table...
-  >>> I: Decoding AndroidManifest.xml with resources...
-  >>> I: Loading resource table from file: /Users/syeehyn/Library/apktool/framework/1.apk
-  >>> I: Regular manifest package...
-  >>> I: Decoding file-resources...
-  >>> I: Decoding values */* XMLs...
-  >>> I: Baksmaling classes.dex...
-  >>> I: Copying assets and libs...
-  >>> I: Copying unknown files...
-  >>> I: Copying original files...
+  [Demo Notebook](notebooks/Step3_Downloading_Decoding_APK.ipynb)
 
-  fetched ./data/instagram/instagram.apk, start decoding
-  >>> I: Using Apktool 2.4.1 on instagram.apk
-  >>> I: Loading resource table...
-  >>> I: Decoding AndroidManifest.xml with resources...
-  >>> I: Loading resource table from file: /Users/syeehyn/Library/apktool/framework/1.apk
-  >>> I: Regular manifest package...
-  >>> I: Decoding file-resources...
-  >>> I: Decoding values */* XMLs...
-  >>> I: Baksmaling classes.dex...
-  >>> I: Baksmaling classes2.dex...
-  >>> I: Baksmaling classes3.dex...
-  >>> I: Baksmaling classes4.dex...
-  >>> I: Copying assets and libs...
-  >>> I: Copying unknown files...
-  >>> I: Copying original files...
+  ```bash
+  #fetching data
+  cd src
+  python run.py data
   ```
 
-- [x] fetching the sitemap DataFrame
-
-  **usage**
-
-  ```python
-  import json
-  sys.path.append('./utils')
-  import utils
-  utils.setup_env()
-  cfg = json.load(open('./demo/sitemap.json'))
-  utils.create_sitemap_df(**cfg)
-  ```
+------------------------------------------------------------------------------------------------
 
 ## Feature Extraction
 
-- [ ] Smali -> Graph Embedding & Feature Extraction with ML framework.
-- [ ] etc.
+### API Call Extraction
 
-## Machine Learning
+  Each app's samli code will be extracted into api calls and be grouped into .csv file. For example, instagram's smali code will be extracted as instagram.csv with following columns: `block`, `invocation`, `package`, `method_name`, `app`.
+
+- [x] Extract API Calls of Apps: `package` + '->' + `method_name`
+- [x] Extract method name of API Calls: `method_name`
+- [x] Extract Code blocks of API Calls: `block`
+- [x] Extract Package used of each API Calls: `package`
+- [x] Extract Invocation of each API Calls: `invocation`
+
+  **usage**
+
+  [Demo Notebook](notebooks/Step4_Feature_Etraction.ipynb)
+
+  ```bash
+  #after fetching data
+  python run.py process
+  ```
+
+### Matrix Construction
+
+  we used Hindroid's method to construct our feature matrix, the description as follows:
+
+#### A Matrix
+
+  $a_{ij}$ is defined as:
+  "If $app_i$ contains $api_j$ , then $a_{ij} = 1$; otherwise, $a_{ij} = 0$."
+
+  **usage**
+
+  [Demo Notebook](notebooks/Step5_Construct_Matrix.ipynb)
+
+#### B Matrix (In Progress)
+
+  $b_{ij}$ is defined as:
+  "If $api_i$ and $api_j$ co-exist in the same code block, then $b_{ij}$ = 1; otherwise, $b_{ij}$ = 0."
+
+#### P Matrix (In Progress)
+
+  $p_{ij}$ is defined as:
+  "If $api_i$ and $api_j$ are with the same package name, then $p_{ij}$ = 1; otherwise, $p_{ij}$ = 0."
+
+#### I Matrix (In Progress)
+
+  $i_{ij}$ is defined as:
+  "If $api_i$ and $api_j$ use the same invoke method, then $i_{ij}$ = 1; otherwise, $i_{ij}$ = 0.
+
+------------------------------------------------------------------------------------------------
+
+## ML Deployment
+
+- [x] Baseline Model
+
+    [Baseline Model Notebook](notebooks/Step6_Baseline_Model.ipynb)
+
+    The baseline model used the A Matrix above fed as feature. Specifically, it uses A.A.T to make number of apps dimensions feature matrix feeding into Naive SVC. I chose accuracy as my baseline model since accuracy is a mostly common used metrics in ML, and it also used in Hindroid paper. (may change when deeper ML Deployment evolved later)
+
+    The baseline model has roughly 64% accuracy, which perform better than I expected.
 
 - [ ] planning
 
 ------------------------------------------------------------------------------------------------
 
+## Usage Instruction
+
+### Use `run.py`
+
+#### Data Ingestion
+
+Parameter Json
+
+```json
+{
+"dir": "../data",
+"urls": [
+    "https://apkpure.com/plague-inc/com.miniclip.plagueinc",
+    "https://apkpure.com/instagram/com.instagram.android",
+    "https://apkpure.com/youtube/com.google.android.youtube",
+    "https://apkpure.com/google-chrome-fast-secure/com.android.chrome",
+    "https://apkpure.com/facebook/com.facebook.katana"
+    ],
+"appmap": "../data/raw/testmap.json",
+"verbose": true,
+"clean": true
+}
+```
+
+- `dir`: the output directory of data ingestion.
+- `urls`: the urls of apks to download.
+- `appmap`: the app map file directory after data ingestion.
+- `verbose`: verbose the process of data ingestion or not.
+- `clean`: delete apk file after data ingestion or not.
+
+
+```bash
+#fetching data
+cd src
+python run.py data
+```
+
+#### Data Process
+
+Parameter Json
+
+```json
+{
+    "fp": "../data/raw/smali",
+    "map_dir": "../data/raw/testmap.json",
+    "op": "../data/interim/appfeature"
+}
+```
+
+- `fp`: the file path of smali code.
+- `map_dir`: the file path of app map.
+- `op`: the output path of processed apps
+
+```bash
+#after fetching data, processing data
+python run.py process
+```
+
+### Use Library Code directly
+
+```python
+import sys
+sys.path.append('../src')
+import features, matrices, models, utils
+```
+
+See following Jupyter notebooks for details:
+
+- [Step1: Generating Sitemap](notebooks/Step1_Generating_Sitemap.ipynb)
+- [Step2: Sampling Apps](notebooks/Step2_Sampling_Apps.ipynb)
+- [Step3: Downloading Decoding APK](notebooks/Step3_Downloading_Decoding_APK.ipynb)
+- [Step4: Feature Extraction](notebooks/Step4_Feature_Extraction.ipynb)
+- [Step5: Construct Matrix](notebooks/Step5_Construct_Matrix.ipynb)
+- [Step6: Baseline Model](notebooks/Step6_Baseline_Model.ipynb)
+
+
+------------------------------------------------------------------------------------------------
+
+## Description of Contents
+
+```
+PROJECT
+├── .vscode
+├── .gitignore
+├── README.md
+├── LICENSE
+├── config
+│   ├── construct_A.json
+│   ├── features.json
+│   ├── malware.json
+│   ├── random_sampling_urls.json
+│   ├── sampling.json
+│   ├── sitemap.json
+│   ├── testdata.json
+│   └── testfeatures.json
+├── data
+│   ├── interim
+│   ├── processed
+│   ├── raw
+│   └── external
+├── notebooks
+│   └── .gitkeep
+├── Dockerfile
+├── run.py
+└── src
+    ├── feature.py
+    ├── matrices.py
+    ├── models.py
+    └── utils.py
+```
+
+### `src`
+
+- `utils.py`: Library code that executes tasks useful for getting data.
+- `feature.py`: Library code that executes tasks useful for processing data.
+- `matrices.py`: Library code that executes tasks useful for constructing matrices.
+- `models.py`: Library code that executes tasks useful for training models.
+
+### `config`
+
+- `construct_A.json`: parameters for constructing A matrix, serving as input to library code.
+- `features.json`: parameters for processing features, serving as input to library code.
+- `malware.json`: parameters for processing malware apks, serving as input to library code.
+- `random_sampling_urls.json`: common parameters for getting sampling data, serving as inputs to library code.
+- `sampling.json`: parameters for sampling methods, serving as inputs to library code.
+- `sitemap.json`: parameters for generating sitemap, serving as inputs to library code.
+- `testdata.json`: parameters for getting small test data.
+- `testfeatures.json`: parameters for running small process on small test data.
+  
+### `data`
+
+  description under this [Data Ingestion Process/Data Schemas](#data-schemas)
+
+### `Dockerfile`
+
+Contains the deployment of environment of this project
+
+### `notebooks`
+
+- Jupyter notebooks for analysis
+  - [EDA Malware & Benign](notebooks/EDA_Malware&Benign.ipynb)
+  
+- Jupyter notebooks for libary instruction walk through:
+  - [Step1: Generating Sitemap](notebooks/Step1_Generating_Sitemap.ipynb)
+  - [Step2: Sampling Apps](notebooks/Step2_Sampling_Apps.ipynb)
+  - [Step3: Downloading Decoding APK](notebooks/Step3_Downloading_Decoding_APK.ipynb)
+  - [Step4: Feature Extraction](notebooks/Step4_Feature_Extraction.ipynb)
+  - [Step5: Construct Matrix](notebooks/Step5_Construct_Matrix.ipynb)
+  - [Step6: Baseline Model](notebooks/Step6_Baseline_Model.ipynb)
+
 ## Prerequisite
 
-- [ApkTool](https://ibotpeaches.github.io/Apktool/) to decompile an Android Apk to Smali code
+### Packages
+
+The project is mainly built upon following packages:
+
+- [ApkTool](https://ibotpeaches.github.io/Apktool/)
+
+- [Pandas](https://pandas.pydata.org/)
+
+- [Dask](https://dask.org/)
+
+### Use Dockerfile
+
+  You can build a docker image out of the provided [DockerFile](Dockerfile)
+
+  ```bash
+  $ docker build . # This will build using the same env as in a)
+  ```
+
+  Run a container, replacing the ID with the output of the previous command
+
+  ```
+  $ docker run -it -p 8888:8888 -p 8787:8787 <container_id_or_tag>
+  ```
   
-  **Installation**
-
-  APKTool and Java dependency is preinstalled in repo
-  
-  The directory of ApkTool is
-
-  ```bash
-  ./utils/apktool
-  ./utils/apktool.jar
-  ```
-
-  The directory of Java is
-
-  ```bash
-  ./utils/jre1.8.0_241/
-  ```
-
-  if you are using bash
-
-  ```bash
-  echo $"export PATH=$PATH:<REPO_DIR>/utils" >> ~/.bash_profile
-  echo $"export PATH=$PATH:<REPO_DIR>/utils/jre1.8.0_241/bin" >> ~/.bash_profile
-  ```
-
-  if you are using zsh
-
-  ```zsh
-  echo $"export PATH=$PATH:<REPO_DIR>/utils" >> ~/.zshrc
-  echo $"export PATH=$PATH:<REPO_DIR>/utils/jre1.8.0_241/bin" >> ~/.zshrc
-  ```
-
-- [networkX](https://networkx.github.io/documentation/stable/index.html)
-
-- [DockerFile](https://github.com/ucsd-ets/scipy-ml-notebook/blob/master/Dockerfile) of the environment
+  The above command will give an URL (Like http://(container_id or 127.0.0.1):8888/?token=<sometoken>) which can be used to access the notebook from browser. You may need to replace the given hostname with "localhost" or "127.0.0.1".
 
 ## References
 
@@ -393,10 +541,6 @@ paper on Malware detection.
     sheet](http://pages.cpsc.ucalgary.ca/~joel.reardon/mobile/smali-cheat.pdf)
     for decompiling Android applications to Smali Code.
 
-- Graph Basics
-
-...
-
 - Graph Techniques in Machine Learning
 
   - A (graduate) [survey course](http://web.eecs.umich.edu/~dkoutra/courses/W18_598/) at Michigan on Graph Mining.
@@ -405,4 +549,4 @@ paper on Malware detection.
 
   - A [collection](https://github.com/src-d/awesome-machine-learning-on-source-code)
   of papers and references exploring understanding source code with
-  machine learning.
+  machine learning
