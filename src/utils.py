@@ -160,15 +160,14 @@ def get_data(**cfg):
     if not os.path.exists(fp + '/interim/'):
         os.mkdir(fp + '/interim/')
     if not os.path.exists(fp + '/interim/appfeature'):
-        os.mkdir(fp + '/raw/appfeature')
+        os.mkdir(fp + '/interim/appfeature')
     if not os.path.exists(fp + '/interim/metadata'):
-        os.mkdir(fp + '/raw/metadata')
+        os.mkdir(fp + '/interim/metadata')
     if not os.path.exists(fp + '/processed/'):
         os.mkdir(fp + '/processed')
     if not os.path.exists(fp + '/processed/matrix_A'):
         os.mkdir(fp + '/processed/matrix_A')
     client = Client()
-    client = client.restart()
     NUM_WORKER = int(len(client.scheduler_info()['workers']))
     get_app_name = lambda url: re.findall(r'https:\/\/apkpure.com\/(.*?)\/', url)[0]
     downloading = [delayed(_download_app)(url, fp, get_app_name(url)) for url in urls]
