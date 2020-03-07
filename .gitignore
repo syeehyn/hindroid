@@ -1,5 +1,5 @@
 
 data
 src/__pycache__
-**/*dask-worker-space
-**/*.ipynb_checkpoints
+**/dask-worker-space*
+**/.ipynb_checkpoints*
