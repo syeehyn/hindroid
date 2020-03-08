@@ -1,13 +1,1 @@
-{
-"dir": "./data",
-"urls": [
-    "https://apkpure.com/plague-inc/com.miniclip.plagueinc",
-    "https://apkpure.com/instagram/com.instagram.android",
-    "https://apkpure.com/youtube/com.google.android.youtube",
-    "https://apkpure.com/google-chrome-fast-secure/com.android.chrome",
-    "https://apkpure.com/facebook/com.facebook.katana"
-    ],
-"appmap": "./data/raw/app_map.json",
-"verbose": true,
-"clean": true
-}
+{"dir": "../data/tests/", "urls": ["https://apkpure.com/moto-gallery/com.fivestar.thridgallery", "https://apkpure.com/flixwood-100-cinema/com.digitamatix.flixwood", "https://apkpure.com/indian-railway-help/com.namichand3.Indian_Railway_Trains_Help", "https://apkpure.com/r%C3%A1dio-livre-salvador/com.shoutcast.app.radiolivresalvador", "https://apkpure.com/retro-asteroids/com.MaximLoverov.RetroAsteroids", "https://apkpure.com/chola-mais/com.mahlabs.cholamais", "https://apkpure.com/english-chinese-dictionary/com.English.Chinese.Dictionary.JuliaDictionaryInc", "https://apkpure.com/edu-school/com.eventifica.eduSchool", "https://apkpure.com/%E6%9A%B4%E8%B5%B0%E6%BC%AB%E7%95%AB%E5%B0%8F%E8%AA%AA%EF%BC%88%E7%B9%81%E7%B0%A1%EF%BC%89/com.baozoumanhuaxiaoshuo815.google", "https://apkpure.com/broken-screen-prank/com.prank.screen.crack.urazapp.brokenscreenprank", "https://apkpure.com/draw-share-my-little-pony/com.drawshare.mylittlepony", "https://apkpure.com/graphics-wallpaper/com.Grafis.usefulthought", "https://apkpure.com/qstore/com.e2e.dac", "https://apkpure.com/talksapp/com.wTalksApp_8772213", "https://apkpure.com/challenge-30/com.conduit.app_1d9a6dd52f9d4ec3b8f258039289fb8d.app", "https://apkpure.com/free-terrarium-tv-reference/com.Mayallah.newterrariumref", "https://apkpure.com/gles3mark-es-3-0-benchmark/com.tomaskimer.gles3mark", "https://apkpure.com/the-specialty-channel/com.primcast.thespecialtychannel2", "https://apkpure.com/la-bella/pl.labella.app", "https://apkpure.com/karomah-habib-mundzir-bin-fuaad-almusawwa/com.appssemogaberkah.karomahhabibmunzirbinfuaadalmusawwa"], "verbose": true, "clean": true}

@@ -6,7 +6,9 @@ import numpy as np
 import json
 from tqdm import tqdm
 from scipy import sparse
-def matrix_A(**cfg):
+import psutil
+NUM_WORKER = psutil.cpu_count(logical = False)
+def _matrix_A(**cfg):
     """[summary]
     Arguments:
         fp_b {[string]} -- [benign csv file directory]
@@ -16,7 +18,7 @@ def matrix_A(**cfg):
     Returns:
         [string] -- [succesful message]
     """    
-    client = Client()
+    client = Client(n_workers = NUM_WORKER)
     fp_b, fp_m, ref, mat= cfg['fp_b'], cfg['fp_m'], cfg['ref'], cfg['mat']
     df_b = dd.read_csv(fp_b)
     df_m = dd.read_csv(fp_m)

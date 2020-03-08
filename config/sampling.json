@@ -1,7 +1,0 @@
-{
-    "mode": "random", 
-    "size": 150, 
-    "op": "./config/data-params.json", 
-    "metadata_dir": "./data/interim/metadata/metadata.csv", 
-    "fp": "./data"
-}
