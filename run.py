@@ -19,11 +19,11 @@ def main(targets):
         get_data(**cfg)
     if 'process' in targets:
         extract_benign()
+    if 'process-test' in targets:
+        extract_benign(True)
     if 'data-test' in targets:
         cfg = json.load(open('./config/test-params.json'))
         get_data(**cfg)
-    if 'process-test' in targets:
-        extract_benign(True)
     return
 
 if __name__ == '__main__':

@@ -26,6 +26,6 @@ def _download_app(url, fp, app):
         with open(apk_dir, 'wb') as fh:
             fh.write(data)
     except:
-        os.rmdir(op + '/' + app)
+        shutil.rmtree(op + '/' + app)
         return app, 'failed'
     return app, 'success'
