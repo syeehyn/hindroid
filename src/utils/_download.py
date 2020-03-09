@@ -17,7 +17,10 @@ def _download_app(url, fp, app):
     if os.path.exists(smali_dir):
         return app, 'success'
     if not os.path.exists(op + '/' + app):
-        os.mkdir(op + '/' + app)
+        try:
+            os.mkdir(op + '/' + app)
+        except:
+            return app, 'failed'
     try:
         soup = bs4.BeautifulSoup(resp.text, 'html.parser')
         download_link = soup.find("iframe", {"id": "iframe_download"})['src']
