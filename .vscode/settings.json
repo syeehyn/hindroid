@@ -1,7 +1,0 @@
-{
-    "python.pythonPath": "/Users/syeehyn/opt/anaconda3/envs/dask-env/bin/python",
-    "git.ignoreLimitWarning": true,
-    "cSpell.ignoreWords": [
-        "appfeature"
-    ]
-}

@@ -4,3 +4,4 @@ data
 *dask-worker-space*
 *.ipynb_checkpoints*
 *_autosave*
+.vscode
