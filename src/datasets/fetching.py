@@ -11,6 +11,9 @@ import json
 import re
 from pathlib import Path
 import psutil
+import logging
+logger = logging.getLogger("distributed.utils_perf")
+logger.setLevel(logging.ERROR)
 NUM_WORKER = psutil.cpu_count(logical = False)
 ROOT_DIR = Path(__file__).parent.parent.parent
 def _initilize_dataenv(fp):
