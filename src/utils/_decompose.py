@@ -35,7 +35,7 @@ def _decompose_app(fp, app, clean,verbose):
             command = subprocess.run([
                 'apktool', 'd', 
                 apk_dir,
-                '-o', op])
+                '-o', op], capture_output=True)
     for i in glob(op + '/*'):
             if i not in glob(op + '/smali*'):
                 try:

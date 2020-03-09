@@ -48,7 +48,9 @@ def extract_benign(test = False):
     jobs = [delayed(_get_app_info)(fp, app, 0, op) for app in applist if app not in op_csv]
     task = dask.persist(jobs)
     print('total {} benign apps to be extracted'.format(len(applist)))
-    return progress(task), _signout(client)
+    progress(task)
+    print("\n Extracted")
+    return _signout(client)
 def extract_malware(fp, test = False):
     """[extract basic features of malware apps]
     Arguments:
@@ -67,4 +69,6 @@ def extract_malware(fp, test = False):
     jobs = [delayed(_get_app_info)(fp, app, 1, op) for app in applist if app not in op_csv]
     task = dask.persist(jobs)
     print("total {} malware apps to be extracted".format(len(applist)))
-    return progress(task), _signout(client)
+    progress(task)
+    print("\n Extracted")
+    return _signout(client)
