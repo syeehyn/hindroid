@@ -37,7 +37,7 @@ def extract_benign(test = False):
                 df['malware'] = 0
                 df.to_csv(os.path.join(op, app + '.csv'), index = False)
     client.shutdown()
-    print('all benign apps extracted')
+    print('all benign apps (total {}) extracted'.format(len(applist)))
     return
 
 def extract_malware(fp, test = False):
@@ -63,5 +63,5 @@ def extract_malware(fp, test = False):
                 df['malware'] = 1
                 df.to_csv(os.path.join(op, app + '.csv'), index = False)
     client.shutdown()
-    print("all malware apps extracted")
+    print("all malware apps (total {}) extracted".format(len(applist)))
     return
