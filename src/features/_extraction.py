@@ -37,6 +37,7 @@ def _get_app_info(fp, app):
             .rename(columns={0: 'invocation', 1: 'package', 2: 'method_name'})], axis = 1)\
             .drop(['call', 'method', 'smali'], axis = 1)\
             .reset_index(drop = True).drop_duplicates()
-    df['api'] = (df['package'] + '->' + df['method_name'])
+    df.loc[:, 'api'] = (df['package'] + '->' + df['method_name'])
     df = df[['api', 'invocation', 'block']]
+    df['app'] = app
     return df
