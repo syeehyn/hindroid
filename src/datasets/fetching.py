@@ -56,6 +56,5 @@ def get_data(**cfg):
         app = dask.compute(proc_extract_app)[0]
         for j in app:
             apps[j]['decode'] = 'done'
-    client.shutdown()
     return 'apk download and decode finished'
     

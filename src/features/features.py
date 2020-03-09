@@ -24,6 +24,7 @@ def extract_benign(test = False):
         fp = os.path.join(ROOT_DIR, 'data/tests/raw/smali')
         op = os.path.join(ROOT_DIR, 'data/tests/interim/features')
     if not os.path.exists(op):
+        os.mkdir(os.path.join(ROOT_DIR, 'data/datasets/interim'))
         os.mkdir(op)
     op_csv = [i.split('/')[-1][:-4] for i in glob(op + '/*.csv')]
     applist = [i.split('/')[-1] for i in glob(fp + '/*')]
