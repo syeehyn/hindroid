@@ -18,6 +18,7 @@ def _initilize_dataenv(fp):
     if not os.path.exists(filepath):
         os.mkdir(filepath)
     if not os.path.exists(os.path.join(filepath, 'raw/apps')):
+        os.mkdir(os.path.join(filepath, 'raw'))
         os.mkdir(os.path.join(filepath, 'raw/apps'))
         os.mkdir(os.path.join(filepath, 'raw/smali'))
 
