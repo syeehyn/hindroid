@@ -62,6 +62,5 @@ def extract_malware(fp, test = False):
                 df['app'] = app
                 df['malware'] = 1
                 df.to_csv(os.path.join(op, app + '.csv'), index = False)
-    client.shutdown()
     print("all malware apps (total {}) extracted".format(len(applist)))
     return
