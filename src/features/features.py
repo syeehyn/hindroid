@@ -26,10 +26,10 @@ def extract_benign(test = False):
     """
     if not test:
         fp = os.path.join(ROOT_DIR, 'data/datasets/raw/smali')
-        op = os.path.join(ROOT_DIR, 'data/datasets/interim/features')
+        op = os.path.join(ROOT_DIR, 'data/datasets/interim/b_features')
     else:
         fp = os.path.join(ROOT_DIR, 'data/tests/raw/smali')
-        op = os.path.join(ROOT_DIR, 'data/tests/interim/features')
+        op = os.path.join(ROOT_DIR, 'data/tests/interim/b_features')
     if not os.path.exists(op):
         if not test:
             try:

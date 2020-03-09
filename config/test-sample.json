@@ -1,5 +1,5 @@
 {
-    "mode": "random", 
     "size": 40,
-    "test": true
+    "test": true,
+    "mfp": "/datasets/dsc180a-wi20-public/Malware/amd_data_smali"
 }
