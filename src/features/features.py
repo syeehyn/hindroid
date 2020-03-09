@@ -6,7 +6,8 @@ from tqdm import tqdm
 from ._extraction import _get_app_info
 from pathlib import Path
 import dask
-from dask.distributed import Client
+from dask.distributed import Client, progress
+# from dask.diagnostics import ProgressBar
 from dask import delayed
 import psutil
 import logging
@@ -14,6 +15,10 @@ logger = logging.getLogger("distributed.utils_perf")
 logger.setLevel(logging.ERROR)
 NUM_WORKER = psutil.cpu_count(logical = False)
 ROOT_DIR = Path(__file__).parent.parent.parent
+
+def _signout(clt):
+    clt.close()
+    return
 def extract_benign(test = False):
     """[extract basic features of benign apps]
     Arguments:
@@ -40,17 +45,10 @@ def extract_benign(test = False):
     op_csv = [i.split('/')[-1][:-4] for i in glob(op + '/*.csv')]
     applist = [i.split('/')[-1] for i in glob(fp + '/*')]
     client = Client(n_workers = NUM_WORKER)
-    # print("Dashboard Address: " + 'http://127.0.0.1:' + str(client.scheduler_info()['services']['dashboard'])+'/status')
-    jobs = [delayed(_get_app_info)(fp, app) for app in applist if app not in op_csv]
-    for i in tqdm(range(0, len(jobs), NUM_WORKER)):
-        proc_jobs = jobs[i: i+NUM_WORKER]
-        dfs = dask.compute(proc_jobs)[0]
-        for j in range(len(dfs)):
-            dfs[j]['malware'] = 0
-            dfs[j].to_csv(os.path.join(op, applist[i + j] + '.csv'), index = False)
-    print('all benign apps (total {}) extracted'.format(len(applist)))
-    return
-
+    jobs = [delayed(_get_app_info)(fp, app, 0, op) for app in applist if app not in op_csv]
+    task = dask.persist(jobs)
+    print('total {} benign apps to be extracted'.format(len(applist)))
+    return progress(task), _signout(client)
 def extract_malware(fp, test = False):
     """[extract basic features of malware apps]
     Arguments:
@@ -66,12 +64,7 @@ def extract_malware(fp, test = False):
     op_csv = [i.split('/')[-1][:-4] for i in glob(op + '/*.csv')]
     applist = [i.split('/')[-1] for i in glob(fp + '/*')]
     client = Client(n_workers = NUM_WORKER)
-    for app in tqdm(applist):
-        if app not in op_csv:
-            df = _get_app_info(fp, app)
-            if len(df) != 0:
-                df['app'] = app
-                df['malware'] = 1
-                df.to_csv(os.path.join(op, app + '.csv'), index = False)
-    print("all malware apps (total {}) extracted".format(len(applist)))
-    return
+    jobs = [delayed(_get_app_info)(fp, app, 1, op) for app in applist if app not in op_csv]
+    task = dask.persist(jobs)
+    print("total {} malware apps to be extracted".format(len(applist)))
+    return progress(task), _signout(client)
