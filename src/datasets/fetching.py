@@ -18,7 +18,7 @@ logger = logging.getLogger("distributed.utils_perf")
 logger.setLevel(logging.ERROR)
 NUM_WORKER = psutil.cpu_count(logical = False)
 ROOT_DIR = Path(__file__).parent.parent.parent
-LIMIT = NUM_WORKER * 4
+LIMIT = NUM_WORKER * 2
 def _signout(clt):
     clt.close()
     return
