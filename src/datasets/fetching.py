@@ -70,7 +70,7 @@ def get_data(**cfg):
     N = int(np.ceil(len(extract_app) / LIMIT))
     for i in range(0, len(extract_app), LIMIT):
         print('\n Job {0}/{1}'.format(i//LIMIT, N))
-        task = dask.persist(extract_app[i, i+LIMIT])
+        task = dask.persist(extract_app[i: i+LIMIT])
         progress(task)
     print('\n Decomposed')
     return _signout(client)
