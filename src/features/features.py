@@ -64,7 +64,7 @@ def extract_malware(fp, test = False):
     if not os.path.exists(op):
         os.mkdir(op)
     op_csv = [i.split('/')[-1][:-4] for i in glob(op + '/*.csv')]
-    applist = [i.split('/')[-1] for i in glob(fp + '/*')]
+    applist = [i.split('/')[-1] for i in fp]
     client = Client(n_workers = NUM_WORKER)
     jobs = [delayed(_get_app_info)(fp, app, 1, op) for app in applist if app not in op_csv]
     task = dask.persist(jobs)
