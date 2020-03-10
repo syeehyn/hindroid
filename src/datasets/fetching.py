@@ -25,7 +25,11 @@ def _signout(clt):
 def _initilize_dataenv(fp):
     filepath = fp
     if not os.path.exists(filepath):
-        os.mkdir(filepath)
+        try:
+            os.mkdir(filepath)
+        except:
+            os.mkdir('data')
+            os.mkdir(filepath)
     if not os.path.exists(os.path.join(filepath, 'raw/apps')):
         try:
             os.mkdir(os.path.join(filepath, 'raw'))
