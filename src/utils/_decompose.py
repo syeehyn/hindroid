@@ -45,6 +45,6 @@ def _decompose_app(fp, app, clean,verbose):
     if clean:
         try:
             shutil.rmtree(app_dir)
-        except FileNotFoundError:
+        except:
             pass
     return app
