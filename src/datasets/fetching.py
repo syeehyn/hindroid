@@ -10,6 +10,7 @@ from src.utils import _download_app
 import json
 import re
 from glob import glob
+import numpy as np
 from pathlib import Path
 import psutil
 import logging
@@ -17,7 +18,7 @@ logger = logging.getLogger("distributed.utils_perf")
 logger.setLevel(logging.ERROR)
 NUM_WORKER = psutil.cpu_count(logical = False)
 ROOT_DIR = Path(__file__).parent.parent.parent
-
+LIMIT = NUM_WORKER * 4
 def _signout(clt):
     clt.close()
     return
@@ -66,7 +67,10 @@ def get_data(**cfg):
     extract_app = [i.split('/')[-1] for i in glob(os.path.join(fp, 'raw/apps/*'))]
     extract_app = [delayed(_decompose_app)(fp, app, clean,verbose) for app in extract_app]
     print('Total {} apk will be extracted'.format(len(extract_app)))
-    task = dask.persist(extract_app)
-    progress(task)
+    N = int(np.ceil(len(extract_app) / LIMIT))
+    for i in range(0, len(extract_app), LIMIT):
+        print('\n Job {0}/{1}'.format(i//LIMIT, N))
+        task = dask.persist(extract_app[i, i+LIMIT])
+        progress(task)
     print('\n Decomposed')
     return _signout(client)
