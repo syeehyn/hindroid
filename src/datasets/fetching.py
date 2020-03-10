@@ -53,7 +53,7 @@ def get_data(**cfg):
     fp, urls, verbose, clean = cfg['dir'], cfg['urls'], cfg["verbose"], cfg['clean']
     _initilize_dataenv(fp)
     get_app_name = lambda url: re.findall(r'https:\/\/apkpure.com\/(.*?)\/', url)[0]
-    downloading = [delayed(_download_app)(url, fp, get_app_name(url)) for url in urls]
+    downloading = [delayed(_download_app)(url, fp, get_app_name(url)) for url in urls if len(get_app_name(url)) != 0]
     task = dask.persist(downloading)
     print('Downloading')
     progress(task)
