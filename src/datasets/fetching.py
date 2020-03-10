@@ -37,8 +37,7 @@ def _initilize_dataenv(fp):
                 pass
             try: os.mkdir(os.path.join(filepath, 'raw/smali'))
             except:
-                [ass]
-
+                pass
 def get_data(**cfg):
     """[download and extract the apks]
     Arguments:
