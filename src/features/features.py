@@ -65,8 +65,9 @@ def extract_malware(fp, test = False):
         os.mkdir(op)
     op_csv = [i.split('/')[-1][:-4] for i in glob(op + '/*.csv')]
     applist = [i.split('/')[-1] for i in fp]
+    fps = [i.split('/')[:-1] for i in fp]
     client = Client(n_workers = NUM_WORKER)
-    jobs = [delayed(_get_app_info)(f, app, 1, op) for app, f in zip(applist, fp) if app not in op_csv]
+    jobs = [delayed(_get_app_info)(f, app, 1, op) for app, f in zip(applist, fps) if app not in op_csv]
     task = dask.persist(jobs)
     print("total {} malware apps to be extracted".format(len(applist)))
     progress(task)
