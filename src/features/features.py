@@ -58,9 +58,9 @@ def extract_malware(fp, test = False):
         test {[boolean]} -- [to extract feature from test set or not]
     """
     if not test:
-        op = os.path.join(ROOT_DIR, 'data/datasets/interim/features')
+        op = os.path.join(ROOT_DIR, 'data/datasets/interim/m_features')
     else:
-        op = os.path.join(ROOT_DIR, 'data/tests/interim/features')
+        op = os.path.join(ROOT_DIR, 'data/tests/interim/m_features')
     if not os.path.exists(op):
         os.mkdir(op)
     op_csv = [i.split('/')[-1][:-4] for i in glob(op + '/*.csv')]
