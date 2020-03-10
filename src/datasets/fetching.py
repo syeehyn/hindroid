@@ -52,6 +52,7 @@ def get_data(**cfg):
     """
     client = Client(n_workers = NUM_WORKER)
     fp, urls, verbose, clean = cfg['dir'], cfg['urls'], cfg["verbose"], cfg['clean']
+    fp = os.path.join(ROOT_DIR, fp)
     _initilize_dataenv(fp)
     def get_app_name(url):
         result = re.findall(r'https:\/\/apkpure.com\/(.*?)\/', url)

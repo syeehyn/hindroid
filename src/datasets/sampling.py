@@ -8,15 +8,13 @@ import os
 from pathlib import Path
 ROOT_DIR = Path(__file__).parent.parent.parent
 META_DIR = os.path.join(ROOT_DIR, 'data/metadata/metadata.csv')
-APP_DIR = os.path.join(ROOT_DIR, 'data/datasets/')
-TEST_DIR = os.path.join(ROOT_DIR, 'data/tests/')
 def sampling(**cfg):
     size, test, mfp = cfg['size'], cfg['test'], cfg['mfp']
     if not test:
-        fp = APP_DIR
+        fp = 'data/datasets/'
         op = os.path.join(ROOT_DIR, 'config/data-params.json')
     else:
-        fp = TEST_DIR
+        fp = 'data/tests/'
         op = os.path.join(ROOT_DIR, 'config/test-params.json')
     metadata = pd.read_csv(META_DIR)
     malware_dir = _get_malware_dir(mfp)
