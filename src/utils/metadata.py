@@ -5,7 +5,7 @@ import requests
 import bs4
 import gzip
 from tqdm import tqdm
-from multiprocess import Pool
+from multiprocessing import Pool
 import json
 from pathlib import Path
 import psutil
