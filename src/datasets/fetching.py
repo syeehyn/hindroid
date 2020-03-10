@@ -72,6 +72,5 @@ def get_data(**cfg):
         print('\n Job {0}/{1}'.format(i//LIMIT, N))
         task = dask.persist(extract_app[i: i+LIMIT])
         progress(task)
-        task.compute()
     print('\n Decomposed')
     return _signout(client)

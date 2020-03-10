@@ -14,7 +14,7 @@ def _download_app(url, fp, app):
     smali = os.path.join(fp, 'raw/smali')
     apk_dir = op + '/' + app + '/' +app + '.apk'
     smali_dir = smali +'/' + app
-    if os.path.exists(smali_dir):
+    if os.path.exists(smali_dir) or os.path.exists(op + '/' + app):
         return app, 'success'
     if not os.path.exists(op + '/' + app):
         try:
