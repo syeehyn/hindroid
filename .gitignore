@@ -39,3 +39,4 @@ ipython_config.py
 *_autosave*
 .vscode/
 .DS_store
+*dev*
