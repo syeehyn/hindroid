@@ -23,5 +23,9 @@ RUN P=/tmp/$(basename $APK_JAR) && \
     chmod +x $P && \
     mv $P /usr/local/bin/apktool.jar
 
+COPY requirements.txt /tmp
+RUN pip install --no-cache-dir -r /tmp/requirements.txt  && \
+	fix-permissions $CONDA_DIR
+
 RUN conda install --yes \
     dask
