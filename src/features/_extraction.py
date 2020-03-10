@@ -11,7 +11,7 @@ def _get_app_smali_dir(fp, app):
     app_dir = os.path.join(fp, app)
     return sorted(glob(os.path.join(app_dir, 'smali*/**/*.smali'), recursive=True))
 def _get_method_call(fn):
-    with open(fn) as f:
+    with open(fn, 'r') as f:
         pattern = r'\.method\s+(.*)|(invoke-.*)'
         data = re.findall(pattern, f.read())
         if len(data) == 0: return pd.DataFrame()
