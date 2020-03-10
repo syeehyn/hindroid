@@ -18,6 +18,7 @@ def _get_method_call(fn):
         data = pd.DataFrame(np.array(data), columns = ['method', 'call']).replace('', np.NaN)
         data['method'] = data['method'].fillna(method = 'ffill')
         data['smali'] = [fn.split('/')[-1] for _ in range(len(data))]
+        f.close()
     return data.dropna()
 def _get_app_info(fp, app, malware, op):
     # job_queue = [delayed(_get_method_call)(fn) for fn in _get_app_smali_dir(fp, app)]
