@@ -26,9 +26,18 @@ def _initilize_dataenv(fp):
     if not os.path.exists(filepath):
         os.mkdir(filepath)
     if not os.path.exists(os.path.join(filepath, 'raw/apps')):
-        os.mkdir(os.path.join(filepath, 'raw'))
-        os.mkdir(os.path.join(filepath, 'raw/apps'))
-        os.mkdir(os.path.join(filepath, 'raw/smali'))
+        try:
+            os.mkdir(os.path.join(filepath, 'raw'))
+            os.mkdir(os.path.join(filepath, 'raw/apps'))
+            os.mkdir(os.path.join(filepath, 'raw/smali'))
+        except:
+            try:
+                os.mkdir(os.path.join(filepath, 'raw/apps'))
+            except:
+                pass
+            try: os.mkdir(os.path.join(filepath, 'raw/smali'))
+            except:
+                [ass]
 
 def get_data(**cfg):
     """[download and extract the apks]
