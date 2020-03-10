@@ -27,7 +27,7 @@ def _initilize_dataenv(fp):
     if not os.path.exists(filepath):
         try:
             os.mkdir(filepath)
-        except:
+        except FileNotFoundError:
             os.mkdir('data')
             os.mkdir(filepath)
     if not os.path.exists(os.path.join(filepath, 'raw/apps')):
