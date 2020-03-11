@@ -68,6 +68,7 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
     client = Client(n_workers = NUM_WORKER)
     fp_processed, fp_matrices, fp_b, fp_m, fp_A, fp_B, _fp_B, fp_P, _fp_P, fp_ref = _file_module(test, FP_processed, FP_matrices, FP_b, FP_m, FP_A, FP_B, _FP_B, FP_P, _FP_P, FP_REF)
     _env_checker(fp_processed, fp_matrices, fp_b, fp_m, _fp_B, _fp_P, fp_ref)
+    print('Start Preprocessing Data')
     df_b = dd.read_csv(fp_b)
     df_m = dd.read_csv(fp_m)
     df = df_b.append(df_m).reset_index()
@@ -81,16 +82,22 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
     apis = apis['id']
     apps_dir = glob(fp_b) + glob(fp_m)
     big_apis = client.scatter(apis)
-
+    print('Finished Preprocessing')
     ###matA
     if compute_A:
+        print('Constructing Matrix A')
         sparse.save_npz(fp_A, _matrix_A(df))
+        print('Matrix A Constructed')
     ###matB
     if compute_B:
+        print('Constructing Matrix B')
         sparse.save_npz(fp_B, _matrix_BP(big_apis, apps_dir, True, _fp_B))
+        print('Matrix B Constructed')
     ###matP
     if compute_P:
+        print('Constructing Matrix P')
         sparse.save_npz(fp_P, _matrix_BP(big_apis, apps_dir, False, _fp_P))
+        print('Matrix P Constructed')
 def _matrix_A(df):
     """[summary]
     Returns:
