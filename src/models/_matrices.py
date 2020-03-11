@@ -109,7 +109,8 @@ def _matrix_A(df, apis):
     print('--Gettng API Set of Each App')
     app_set = df.groupby(['app']).api.apply(lambda x: set(x), meta = 'set').persist()
     progress(app_set)
-    apps = app_set.compute().index.tolist()
+    app_set = app_set.compute()
+    apps = app_set.index.tolist()
     A = np.zeros((len(apps), len(apis)))
     print('--A Constructing')
     app_dict = {}
