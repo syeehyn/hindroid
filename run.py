@@ -29,7 +29,9 @@ def main(targets):
         fp = json.load(open('./config/test-params.json'))['m_dir']
         extract_benign(True)
         extract_malware(fp, True)
-    if 'train-test' in targets:
+    if 'matrix' in targets:
+        construct_matrices(False, True, True, True)
+    if 'matrix-test' in targets:
         construct_matrices(True, True, True, True)
     return
 
