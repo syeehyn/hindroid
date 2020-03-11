@@ -85,22 +85,22 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
     print('Finished Preprocessing')
     ###matA
     if compute_A:
-        print('Constructing Matrix A')
+        print('\n Constructing Matrix A')
         A, apps = _matrix_A(df, apis)
         sparse.save_npz(fp_A, A)
         with open(os.path.join(fp_ref, 'app_ref.json'), 'w') as fp:
             json.dump(apps, fp)
-        print('Matrix A Constructed')
+        print('\n Matrix A Constructed')
     ###matB
     if compute_B:
-        print('Constructing Matrix B')
+        print('\n Constructing Matrix B')
         sparse.save_npz(fp_B, _matrix_BP(df, True, shape))
-        print('Matrix B Constructed')
+        print('\n Matrix B Constructed')
     ###matP
     if compute_P:
-        print('Constructing Matrix P')
+        print('\n Constructing Matrix P')
         sparse.save_npz(fp_P, _matrix_BP(df, False, shape))
-        print('Matrix P Constructed')
+        print('\n Matrix P Constructed')
 def _matrix_A(df, apis):
     """[summary]
     Returns:
@@ -112,7 +112,7 @@ def _matrix_A(df, apis):
     app_set = app_set.compute()
     apps = app_set.index.tolist()
     A = np.zeros((len(apps), len(apis)))
-    print('--A Constructing')
+    print('\n --A Constructing')
     app_dict = {}
     for i in tqdm(range(len(apps))):
         A[i, np.array(apis.loc[apis.isin(app_set[apps[i]].intersection(set(apis)))].index)] = 1
