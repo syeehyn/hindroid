@@ -4,6 +4,7 @@ import os
 from src.datasets import *
 from src.utils import create_metadata
 from src.features import extract_benign, extract_malware
+from src.models import construct_matrices
 from glob import glob
 def main(targets):
     if 'metadata' in targets:
@@ -28,6 +29,8 @@ def main(targets):
         fp = json.load(open('./config/test-params.json'))['m_dir']
         extract_benign(True)
         extract_malware(fp, True)
+    if 'train-test' in targets:
+        construct_matrices(True, True, True, True)
     return
 
 if __name__ == '__main__':
