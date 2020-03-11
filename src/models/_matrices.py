@@ -62,10 +62,12 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
     print('Start Preprocessing Data')
     if test and os.path.exists(FP_pram_test):
         files = json.load(open(FP_pram_test))
+        print('using app list of parameter to train (tests)')
         df_b = dd.concat([dd.read_csv(i) for i in files['benign']])
         df_m = dd.concat([dd.read_csv(i) for i in files['malware']])
     elif (not test) and os.path.exists(FP_pram):
         files = json.load(open(FP_pram))
+        print('using app list of parameter to train (datasets)')
         df_b = dd.concat([dd.read_csv(i) for i in files['benign']])
         df_m = dd.concat([dd.read_csv(i) for i in files['malware']])
     else:
