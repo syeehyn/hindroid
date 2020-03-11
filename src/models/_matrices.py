@@ -22,6 +22,8 @@ FP_A = 'processed/matrices/A'
 FP_B = 'processed/matrices/B'
 FP_P = 'processed/matrices/P'
 FP_REF = 'processed/matrices/ref'
+FP_pram = os.path.join(ROOT_DIR, 'config/train-params.json')
+FP_pram_test = os.path.join(ROOT_DIR, 'config/test-train .json')
 def _env_checker(fp_processed, fp_matrices, fp_b, fp_m, fp_ref):
     if not os.path.exists(fp_processed):
         os.mkdir(fp_processed)
@@ -58,13 +60,22 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
     fp_processed, fp_matrices, fp_b, fp_m, fp_A, fp_B, fp_P, fp_ref = _file_module(test, FP_processed, FP_matrices, FP_b, FP_m, FP_A, FP_B, FP_P, FP_REF)
     _env_checker(fp_processed, fp_matrices, fp_b, fp_m, fp_ref)
     print('Start Preprocessing Data')
-    df_b = dd.read_csv(fp_b, usecols = ['api', 'block', 'app'], dtype = str)
-    df_m = dd.read_csv(fp_m, usecols = ['api', 'block', 'app'], dtype = str)
+    if test and os.path.exists(FP_pram_test):
+        files = json.load(open(FP_pram_test))
+        df_b = dd.concat([dd.read_csv(i) for i in files['benign']])
+        df_m = dd.concat([dd.read_csv(i) for i in files['malware']])
+    elif (not test) and os.path.exists(FP_pram):
+        files = json.load(open(FP_pram))
+        df_b = dd.concat([dd.read_csv(i) for i in files['benign']])
+        df_m = dd.concat([dd.read_csv(i) for i in files['malware']])
+    else:
+        df_b = dd.read_csv(fp_b, usecols = ['api', 'block', 'app'], dtype = str)
+        df_m = dd.read_csv(fp_m, usecols = ['api', 'block', 'app'], dtype = str)
     df = df_b.append(df_m).reset_index()
     apis = df.api.unique().compute()
     apis_dic = {apis[i]:i for i in range(len(apis))}
     df['api_id'] = df.api.apply(lambda x: apis_dic[x], meta = int)
-    df['package'] = df.api.str.split('->').apply(lambda x: x[0], meta = str)
+    df['package'] = df.api.str.split('->').apply(lambda x: x[0] if type(x) == list else x, meta = str)
     with open(os.path.join(fp_ref, 'api_ref.json'), 'w') as fp:
                 json.dump(apis_dic, fp)
     df['api_id'] = df.api.apply(lambda x: apis_dic[x], meta = int)
@@ -92,10 +103,13 @@ def _matrix_A(df, apis):
     """[summary]
     Returns:
         [string] -- [succesful message]
-    """        
-    app_set = df.groupby(['app']).api.apply(lambda x: set(x), meta = 'set').compute()
-    apps = app_set.index.tolist()
+    """
+    print('--Gettng API Set of Each App')
+    app_set = df.groupby(['app']).api.apply(lambda x: set(x), meta = 'set').persist()
+    progress(app_set)
+    apps = app_set.compute().index.tolist()
     A = np.zeros((len(apps), len(apis)))
+    print('--A Constructing')
     app_dict = {}
     for i in tqdm(range(len(apps))):
         A[i, np.array(apis.loc[apis.isin(app_set[apps[i]].intersection(set(apis)))].index)] = 1
