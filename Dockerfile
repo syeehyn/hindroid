@@ -28,4 +28,4 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt  && \
 	fix-permissions $CONDA_DIR
 
 RUN conda install --yes \
-    dask
+    dask=2.5.2
