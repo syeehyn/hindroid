@@ -12,7 +12,7 @@ from tqdm import tqdm
 from scipy import sparse
 import psutil
 from pathlib import Path
-NUM_WORKER = psutil.cpu_count(logical = False)//2
+NUM_WORKER = psutil.cpu_count(logical = False)
 ROOT_DIR = Path(__file__).parent.parent.parent
 FP_processed  = 'processed/'
 FP_matrices  = 'processed/matrices'
@@ -126,7 +126,7 @@ def _matrix_BP(df, is_B, shape):
     else:
         group_key = 'package'
     result = df.groupby(group_key).api_id\
-            .apply(lambda x: list(combinations(x.drop_duplicates(), 2)), meta = list)\
+            .apply(lambda x: list(combinations(x.drop_duplicates(), 2)), meta = list, split_out = NUM_WORKER)\
             .explode()\
             .reset_index(drop = True)\
             .drop_duplicates()\
