@@ -28,7 +28,7 @@ def main(targets):
                 continue
             output = np.unique(np.vstack([output, mat]), axis = 1)
             counter += 1
-            np.save('tmp', output)
+            np.save('tmp_1', output)
 
 
 
