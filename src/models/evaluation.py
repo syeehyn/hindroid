@@ -49,4 +49,4 @@ def evaluating(test=False, test_size=.33, methods=['AA', 'ABA', 'APA', 'APBPA'])
                 'fn': fn
                 }
         results.append(res)
-    return pd.DataFrame(results), len(X)
+    return pd.DataFrame(results)
