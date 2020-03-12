@@ -30,3 +30,4 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt  && \
 RUN conda install --yes \
     dask=2.11 \
     pyspark
+RUN conda install koalas -c conda-forge --yes
