@@ -218,17 +218,6 @@ Under folder utils, building utility functions to download apk and transfer apks
 
     **usage**
 
-  see the example in this [notebook](notebooks/Step2_Sampling_Apps.ipynb).
-
-- [ ] Category Sampling *will be implement after feature extraction
-  - sampling same number of apks according to corresponding category from APKPure with the malware sample.
-  - First sample a smaller set from sitemap, then fetch the category of each apps by requesting apps' links. With each category get the even matched links to sample.
-
-     **usage**
-
-  ```python
-  ###TODO
-  ```
 
 - [ ] Future Sample Methods Coming Soon...
   
@@ -255,26 +244,6 @@ Under folder utils, building utility functions to download apk and transfer apks
     "verbose": 1,
     "clean": true
     }
-    ```
-
-   **usage**
-
-  see the example in this [notebook](notebooks/Step3_Downloading_Decoding_APK.ipynb)
-
-
-#### Fetching and Storing Data
-
-The complete pipeline of getting both metadata and downloading apk and decompose them into data schemas.
-
-  **usage**
-
-  [Demo Notebook](notebooks/Step3_Downloading_Decoding_APK.ipynb)
-
-  ```bash
-  #fetching data
-  python run.py data
-  ```
-
 ------------------------------------------------------------------------------------------------
 
 ## Feature Extraction
@@ -410,16 +379,6 @@ import sys
 sys.path.append('../src')
 import features, matrices, models, utils
 ```
-
-See following Jupyter notebooks for details:
-
-- [Step1: Generating Sitemap](notebooks/Step1_Generating_Sitemap.ipynb)
-- [Step2: Sampling Apps](notebooks/Step2_Sampling_Apps.ipynb)
-- [Step3: Downloading Decoding APK](notebooks/Step3_Downloading_Decoding_APK.ipynb)
-- [Step4: Feature Extraction](notebooks/Step4_Feature_Extraction.ipynb)
-- [Step5: Construct Matrix](notebooks/Step5_Construct_Matrix.ipynb)
-- [Step6: Baseline Model](notebooks/Step6_Baseline_Model.ipynb)
-
 
 ------------------------------------------------------------------------------------------------
 
