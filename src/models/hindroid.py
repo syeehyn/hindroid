@@ -28,7 +28,7 @@ class hindroid():
         elif method == 'APA':
             self.kernel = lambda x,y: x.dot(self.P).dot(y.T).todense()
         elif method == 'APBPA':
-            self.kernel = lambda x,y: x.dot(self.P).dot(self.B).dot(self.P.T).dot(y.T)
+            self.kernel = lambda x,y: x.dot(self.P).dot(self.B).dot(self.P.T).dot(y.T).todense()
         else:
             raise NotImplementedError
     def fit(self, X, y):

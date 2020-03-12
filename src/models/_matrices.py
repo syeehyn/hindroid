@@ -108,8 +108,7 @@ def _matrix_A(df, apis):
         [string] -- [succesful message]
     """
     print('--Gettng API Set of Each App')
-    app_set = df.groupby(['app']).api.apply(lambda x: set(x), meta = 'set').persist()
-    progress(app_set)
+    app_set = df.groupby(['app']).api.apply(lambda x: set(x), meta = 'set')
     app_set = app_set.compute()
     apps = app_set.index.tolist()
     A = np.zeros((len(apps), len(apis)))
