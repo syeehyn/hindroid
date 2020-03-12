@@ -130,9 +130,8 @@ def _matrix_BP(df, is_B, shape):
             .explode()\
             .reset_index(drop = True)\
             .drop_duplicates()\
-            .dropna().persist()
-    progress(result)
-    entries = pd.DataFrame(result.compute().values.tolist()).values
+            .dropna().compute()
+    entries = pd.DataFrame(result.values.tolist()).values
     values = np.full(shape=entries.shape[0], fill_value=1, dtype='i1')
     result = sparse.coo_matrix(
                 (values, (entries[:,0], entries[:,1])), shape=(shape)
