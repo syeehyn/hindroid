@@ -14,7 +14,7 @@ def main(targets):
         for i in app_dir[224:]:
             print(counter)
             df = pd.read_csv(i)
-            df = df.dropna()
+            df = df.dropna(subset = ['apis'])
             df['api_id'] = df.api.apply(lambda x: apis[x])
             df['package'] = df.api.str.split('->').apply(lambda x: x[0] if type(x) == list else x)
             mat = pd.DataFrame(df.groupby('package').api_id\
