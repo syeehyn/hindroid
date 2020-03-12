@@ -30,7 +30,7 @@ def main(targets):
         extract_benign(True)
         extract_malware(fp, True)
     if 'matrix' in targets:
-        construct_matrices(False, False, False, True)
+        construct_matrices(False, True, False, False)
     if 'matrix-test' in targets:
         construct_matrices(True, True, True, True)
     return

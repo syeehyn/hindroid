@@ -77,6 +77,7 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
     df = df.dropna()
     apis = df.api.unique().compute()
     apis_dic = {apis.iloc[i]:i for i in range(len(apis))}
+    apis = pd.Series(apis_dic)
     df['api_id'] = df.api.apply(lambda x: apis_dic[x], meta = int)
     df['package'] = df.api.str.split('->').apply(lambda x: x[0] if type(x) == list else x, meta = str)
     with open(os.path.join(fp_ref, 'api_ref.json'), 'w') as fp:
@@ -115,7 +116,7 @@ def _matrix_A(df, apis):
     print('\n --A Constructing')
     app_dict = {}
     for i in tqdm(range(len(apps))):
-        A[i, np.array(apis.loc[apis.isin(app_set[apps[i]].intersection(set(apis)))].index)] = 1
+        A[i,  apis[app_set[apps[i]]]] = 1
         app_dict[apps[i]] = i
     A = sparse.coo_matrix(A)
     return A, app_dict

@@ -22,16 +22,29 @@ NUM_WORKER = psutil.cpu_count(logical = False)
 ROOT_DIR = Path(__file__).parent.parent.parent
 FP_b = 'interim/b_features/*.csv'
 FP_m = 'interim/m_features/*.csv'
+FP_pram = os.path.join(ROOT_DIR, 'config/train-params.json')
+FP_pram_test = os.path.join(ROOT_DIR, 'config/test-train .json')
 def _preproc(test, FP_b, FP_m):
     client = Client(n_workers = NUM_WORKER)
-    if test:
-        fp_b = os.path.join(ROOT_DIR, 'data/tests', FP_b)
-        fp_m = os.path.join(ROOT_DIR, 'data/tests', FP_m)
+    if test and os.path.exists(FP_pram_test):
+        files = json.load(open(FP_pram_test))
+        print('using app list of parameter to train (tests)')
+        df_b = dd.concat([dd.read_csv(i) for i in files['benign']])
+        df_m = dd.concat([dd.read_csv(i) for i in files['malware']])
+    elif (not test) and os.path.exists(FP_pram):
+        files = json.load(open(FP_pram))
+        print('using app list of parameter to train (datasets)')
+        df_b = dd.concat([dd.read_csv(i) for i in files['benign']])
+        df_m = dd.concat([dd.read_csv(i) for i in files['malware']])
     else:
-        fp_b = os.path.join(ROOT_DIR, 'data/datasets', FP_b)
-        fp_m = os.path.join(ROOT_DIR, 'data/datasets', FP_m)
-    df_b = dd.read_csv(fp_b)
-    df_m = dd.read_csv(fp_m)
+        if test:
+            fp_b = os.path.join(ROOT_DIR, 'data/tests', FP_b)
+            fp_m = os.path.join(ROOT_DIR, 'data/tests', FP_m)
+        else:
+            fp_b = os.path.join(ROOT_DIR, 'data/datasets', FP_b)
+            fp_m = os.path.join(ROOT_DIR, 'data/datasets', FP_m)        
+        df_b = dd.read_csv(fp_b)
+        df_m = dd.read_csv(fp_m)
     df = df_b.append(df_m).reset_index()
     df['package'] = df.api.str.split('->').apply(lambda x: x[0] if type(x) == list else x, meta = str)
     nunique_chunk = lambda s: s.apply(lambda x: list(set(x)))
