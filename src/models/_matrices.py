@@ -75,7 +75,7 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
         df_m = dd.read_csv(fp_m, usecols = ['api', 'block', 'app'], dtype = str)
     df = df_b.append(df_m).reset_index()
     apis = df.api.unique().compute().dropna()
-    apis_dic = {apis.tolist()[i]:i for i in range(len(apis))}
+    apis_dic = {apis.iloc[i]:i for i in range(len(apis))}
     df['api_id'] = df.api.apply(lambda x: apis_dic[x], meta = int)
     df['package'] = df.api.str.split('->').apply(lambda x: x[0] if type(x) == list else x, meta = str)
     with open(os.path.join(fp_ref, 'api_ref.json'), 'w') as fp:
