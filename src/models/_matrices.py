@@ -74,7 +74,8 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
         df_b = dd.read_csv(fp_b, usecols = ['api', 'block', 'app'], dtype = str)
         df_m = dd.read_csv(fp_m, usecols = ['api', 'block', 'app'], dtype = str)
     df = df_b.append(df_m).reset_index()
-    apis = df.api.unique().compute().dropna()
+    df = df.dropna()
+    apis = df.api.unique().compute()
     apis_dic = {apis.iloc[i]:i for i in range(len(apis))}
     df['api_id'] = df.api.apply(lambda x: apis_dic[x], meta = int)
     df['package'] = df.api.str.split('->').apply(lambda x: x[0] if type(x) == list else x, meta = str)
