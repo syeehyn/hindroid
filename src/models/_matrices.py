@@ -12,7 +12,7 @@ from tqdm import tqdm
 from scipy import sparse
 import psutil
 from pathlib import Path
-NUM_WORKER = psutil.cpu_count(logical = False)//4
+NUM_WORKER = 1
 ROOT_DIR = Path(__file__).parent.parent.parent
 FP_processed  = 'processed/'
 FP_matrices  = 'processed/matrices'
