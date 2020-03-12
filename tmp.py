@@ -10,8 +10,8 @@ def main(targets):
         apis = json.load(open('/datasets/home/87/887/shy166/dsc180a/hindroid/data/datasets/processed/matrices/ref/api_ref.json'))
         app_dir = b_dir + m_dir
         output = np.array([np.NaN, np.NaN])
-        counter = 0
-        for i in app_dir[224:]:
+        counter = 542
+        for i in app_dir[542:]:
             print(counter)
             df = pd.read_csv(i)
             df = df.dropna(subset = ['api'])
@@ -28,7 +28,7 @@ def main(targets):
                 continue
             output = np.unique(np.vstack([output, mat]), axis = 1)
             counter += 1
-            np.save('tmp.npz', output)
+            np.save('tmp', output)
 
 
 
