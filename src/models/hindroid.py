@@ -6,7 +6,7 @@ import os
 import pandas as pd
 from glob import glob
 from pathlib import Path
-ROOT_DIR = Path(__file__).parent.parent.parent
+from src import *
 MAT_path = 'processed/matrices'
 def _load_mat(test):
         if test:

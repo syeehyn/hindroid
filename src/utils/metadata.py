@@ -9,9 +9,8 @@ from multiprocessing import Pool
 import json
 from pathlib import Path
 import psutil
-NUM_WORKER = psutil.cpu_count(logical = False)
+from src import *
 URL = "https://apkpure.com/sitemap.xml"
-ROOT_DIR = Path(__file__).parent.parent.parent
 OP = os.path.join(ROOT_DIR, 'data/metadata/metadata.csv')
 def _get_xmls(url):
     """[get xml of the sitemap]

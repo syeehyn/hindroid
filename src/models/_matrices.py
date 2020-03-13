@@ -10,8 +10,7 @@ from scipy import sparse
 from pathlib import Path
 import json
 import psutil
-NUM_WORKER = psutil.cpu_count(logical = False)
-ROOT_DIR = Path(__file__).parent.parent.parent
+from src import *
 FP_processed  = 'processed/'
 FP_matrices  = 'processed/matrices'
 FP_b = 'interim/b_features/*'

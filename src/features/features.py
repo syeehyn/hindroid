@@ -11,10 +11,9 @@ from dask.distributed import Client, progress
 from dask import delayed
 import psutil
 import logging
+from src import *
 logger = logging.getLogger("distributed.utils_perf")
 logger.setLevel(logging.ERROR)
-NUM_WORKER = psutil.cpu_count(logical = False)
-ROOT_DIR = Path(__file__).parent.parent.parent
 
 def _signout(clt):
     clt.close()

@@ -6,7 +6,7 @@ import numpy as np
 import json
 import os
 from pathlib import Path
-ROOT_DIR = Path(__file__).parent.parent.parent
+from src import *
 META_DIR = os.path.join(ROOT_DIR, 'data/metadata/metadata.csv')
 def sampling(**cfg):
     size, test, mfp = cfg['size'], cfg['test'], cfg['mfp']

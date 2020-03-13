@@ -18,8 +18,7 @@ from sklearn.svm import SVC
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score, fbeta_score, accuracy_score, confusion_matrix
-NUM_WORKER = psutil.cpu_count(logical = False)
-ROOT_DIR = Path(__file__).parent.parent.parent
+from src import *
 FP_b = 'interim/b_features/*.csv'
 FP_m = 'interim/m_features/*.csv'
 FP_pram = os.path.join(ROOT_DIR, 'config/train-params.json')
@@ -88,24 +87,28 @@ def evaluate(test = False, clfs = [LogisticRegression(), SVC(), RandomForestClas
     y = df.malware
     X_train, X_test, y_train, y_test = \
             train_test_split(X, y, test_size=test_size)
-    results = []
+    train_res, test_res = [], []
     for clf in clfs:
         model = baseline(test, clf, df)
         model.fit(X_train, y_train)
-        y_pred = model.predict(X_test)
-        f1 = f1_score(y_test, y_pred)
-        # beta = fbeta_score(y_test, y_pred, average='binary', beta=1)
-        acc = accuracy_score(y_test, y_pred)
-        tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
-        res = {
-                'method': type(clf).__name__,
-                'f1': f1,
-                # 'beta': beta,
-                'acc': acc,
-                'tp': tp,
-                'fp': fp,
-                'tn': tn,
-                'fn': fn
-                }
-        results.append(res)
-    return pd.DataFrame(results), len(X)
+        y_preds = [model.predict(X_train), model.predict(X_test)]
+        y_trues = [y_train, y_test]
+        res = []
+        for y_true, y_pred in zip(y_trues, y_preds):
+            f1 = f1_score(y_true, y_pred)
+            acc = accuracy_score(y_true, y_pred)
+            tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+            res += [{
+                    'method': type(clf).__name__,
+                    'f1': f1,
+                    'acc': acc,
+                    'tp': tp,
+                    'fp': fp,
+                    'tn': tn,
+                    'fn': fn
+                        }]
+        train_res.append(res[0])
+        test_res.append(res[1])
+    return len(X), pd.DataFrame(train_res), pd.DataFrame(test_res)
+
+    

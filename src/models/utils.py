@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score, fbeta_score, accuracy_score, confusion_matrix
 from .hindroid import _load_mat, hindroid
 from joblib import dump, load
-ROOT_DIR = Path(__file__).parent.parent.parent
+from src import *
 APP_REF = 'processed/matrices/ref/app_ref.csv'
 def _get_labels(test, APP_REF):
         if test:
