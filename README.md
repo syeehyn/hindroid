@@ -29,7 +29,7 @@ ML Deployment | In Progress
 
 The main task of Hindroid is to use machine learning, typically Graph Neural Network, to classify Android Apps as benign or malicious. Hindroid is designed to be an intelligent Android malware detection system based on structured heterogeneous information network.
 
-[Details](./writeups/overview.md)
+[Details](https://github.com/shy166/hindroid/blob/master/writeups/overview.md)
 
 ------------------------------------------------------------------------------------------------
 
