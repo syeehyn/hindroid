@@ -6,7 +6,6 @@ from pyspark import SparkContext
 import pyspark.ml as M
 import pyspark.sql.functions as F
 import pyspark.sql.types as T
-import databricks.koalas as ks
 from scipy import sparse
 from pathlib import Path
 import json
@@ -66,19 +65,18 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
     if test and os.path.exists(FP_pram_test):
         files = json.load(open(FP_pram_test))
         print('using app list of parameter to train (tests)')
-        df_b = ks.read_csv(files['benign'])
-        df_m = ks.read_csv(files['malware'])
+        df_b = spark.read.format("csv").option("header", "true").load(files['benign'])
+        df_m = spark.read.format("csv").option("header", "true").load(files['malware'])
     elif (not test) and os.path.exists(FP_pram):
         files = json.load(open(FP_pram))
         print('using app list of parameter to train (datasets)')
-        df_b = ks.read_csv(files['benign'])
-        df_m = ks.read_csv(files['malware'])
+        df_b = spark.read.format("csv").option("header", "true").load(files['benign'])
+        df_m = spark.read.format("csv").option("header", "true").load(files['malware'])
     else:
-        df_b = ks.read_csv(fp_b)
-        df_m = ks.read_csv(fp_m)
-    df = df_b.append(df_m).reset_index()
+        df_b = spark.read.format("csv").option("header", "true").load(fp_b)
+        df_m = spark.read.format("csv").option("header", "true").load(fp_m)
+    df = df_b.union(df_m)
     df = df.dropna()
-    df = df.to_spark()
     df = df.select('api', 'app', 'block', 'malware')
     df = df.withColumn('package', F.split(F.col('api'), '->')[0])
     num_app, num_api, num_block, num_package = df.select(F.countDistinct('app'),
