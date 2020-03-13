@@ -80,7 +80,7 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
     df = df.dropna()
     df = df.to_spark()
     df = df.select('api', 'app', 'block')
-    df = df.withColumn('package', F.split(F.split(F.col('api'), '->')[0], '/')[0])
+    df = df.withColumn('package', F.split(F.col('api'), '->')[0])
     num_app, num_api, num_block, num_package = df.select(F.countDistinct('app'),
                                                             F.countDistinct('api'),
                                                             F.countDistinct('block'),
@@ -98,7 +98,9 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
     stringIndexer = M.feature.StringIndexer(inputCol='package', outputCol='package_id')
     model = stringIndexer.fit(df)
     df = model.transform(df)
-    api_o = df.select('api', 'app', 'block', 'package')
+    app_ref = df.select('app_id', 'app').dropDuplicates().toPandas().set_index('app').astype(int).to_dict()
+    with open(os.path.join(fp_ref, 'api_ref.json'), 'w') as fp:
+                json.dump(app_ref, fp)
     com = df.select(F.col('api_id').alias('api'),
                 F.col('app_id').alias('app'),
                 F.col('block_id').alias('block'),
