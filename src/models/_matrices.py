@@ -64,13 +64,19 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
     if test and os.path.exists(FP_pram_test):
         files = json.load(open(FP_pram_test))
         print('using app list of parameter to train (tests)')
-        df_b = spark.read.format("csv").option("header", "true").load(files['benign'])
-        df_m = spark.read.format("csv").option("header", "true").load(files['malware'])
+        files = json.load(open(FP_pram_test))
+        b_file = pd.Series(files['benign']).apply(lambda x: os.path.join(ROOT_DIR, files['benign'])).tolist()
+        f_file = pd.Series(files['benign']).apply(lambda x: os.path.join(ROOT_DIR, files['malware'])).tolist()
+        df_b = spark.read.format("csv").option("header", "true").load(b_file)
+        df_m = spark.read.format("csv").option("header", "true").load(f_file)
     elif (not test) and os.path.exists(FP_pram):
         files = json.load(open(FP_pram))
         print('using app list of parameter to train (datasets)')
-        df_b = spark.read.format("csv").option("header", "true").load(files['benign'])
-        df_m = spark.read.format("csv").option("header", "true").load(files['malware'])
+        files = json.load(open(FP_pram_test))
+        b_file = pd.Series(files['benign']).apply(lambda x: os.path.join(ROOT_DIR, files['benign'])).tolist()
+        f_file = pd.Series(files['benign']).apply(lambda x: os.path.join(ROOT_DIR, files['malware'])).tolist()
+        df_b = spark.read.format("csv").option("header", "true").load(b_file)
+        df_m = spark.read.format("csv").option("header", "true").load(f_file)
     else:
         df_b = spark.read.format("csv").option("header", "true").load(fp_b)
         df_m = spark.read.format("csv").option("header", "true").load(fp_m)
