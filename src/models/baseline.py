@@ -40,16 +40,16 @@ def _preproc(test, FP_b, FP_m):
         fp_m = os.path.join(ROOT_DIR, 'data/datasets', FP_m)
     if test and os.path.exists(FP_pram_test):
         files = json.load(open(FP_pram_test))
-        b_file = pd.Series(files['benign']).apply(lambda x: os.path.join(ROOT_DIR, 'data/tests/interim', x)).tolist()
-        f_file = pd.Series(files['benign']).apply(lambda x: os.path.join(ROOT_DIR, 'data/tests/interim', x)).tolist()
+        b_file = pd.Series(files['benign']).apply(lambda x: os.path.join(ROOT_DIR, 'data/tests/interim/b_features', x)).tolist()
+        m_file = pd.Series(files['malware']).apply(lambda x: os.path.join(ROOT_DIR, 'data/tests/interim/m_features', x)).tolist()
         df_b = spark.read.format("csv").option("header", "true").load(b_file)
-        df_m = spark.read.format("csv").option("header", "true").load(f_file)
+        df_m = spark.read.format("csv").option("header", "true").load(m_file)
     elif (not test) and os.path.exists(FP_pram):
         files = json.load(open(FP_pram))
-        b_file = pd.Series(files['benign']).apply(lambda x: os.path.join(ROOT_DIR, 'data/datasets/interim', x)).tolist()
-        f_file = pd.Series(files['benign']).apply(lambda x: os.path.join(ROOT_DIR, 'data/datasets/interim', x)).tolist()
+        b_file = pd.Series(files['benign']).apply(lambda x: os.path.join(ROOT_DIR, 'data/datasets/interim/b_features', x)).tolist()
+        m_file = pd.Series(files['malware']).apply(lambda x: os.path.join(ROOT_DIR, 'data/datasets/interim/m_features', x)).tolist()
         df_b = spark.read.format("csv").option("header", "true").load(b_file)
-        df_m = spark.read.format("csv").option("header", "true").load(f_file)
+        df_m = spark.read.format("csv").option("header", "true").load(m_file)
     else:
         df_b = spark.read.format("csv").option("header", "true").load(fp_b)
         df_m = spark.read.format("csv").option("header", "true").load(fp_m)
