@@ -24,7 +24,7 @@ from src import *
 FP_b = 'interim/b_features/*'
 FP_m = 'interim/m_features/*'
 FP_pram = os.path.join(ROOT_DIR, 'config/train-params.json')
-FP_pram_test = os.path.join(ROOT_DIR, 'config/test-train .json')
+FP_pram_test = os.path.join(ROOT_DIR, 'config/test-train.json')
 def _preproc(test, FP_b, FP_m):
     SparkContext.setSystemProperty('spark.executor.memory', '64g')
     sc = SparkContext("local", "App Name")

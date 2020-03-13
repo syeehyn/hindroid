@@ -20,7 +20,7 @@ FP_B = 'processed/matrices/B'
 FP_P = 'processed/matrices/P'
 FP_REF = 'processed/matrices/ref'
 FP_pram = os.path.join(ROOT_DIR, 'config/train-params.json')
-FP_pram_test = os.path.join(ROOT_DIR, 'config/test-train .json')
+FP_pram_test = os.path.join(ROOT_DIR, 'config/test-train.json')
 
 def _env_checker(fp_processed, fp_matrices, fp_b, fp_m, fp_ref):
     if not os.path.exists(fp_processed):
