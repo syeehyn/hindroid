@@ -72,7 +72,6 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
     elif (not test) and os.path.exists(FP_pram):
         files = json.load(open(FP_pram))
         print('using app list of parameter to train (datasets)')
-        files = json.load(open(FP_pram_test))
         b_file = pd.Series(files['benign']).apply(lambda x: os.path.join(ROOT_DIR, 'data/datasets/interim/b_features', x)).tolist()
         m_file = pd.Series(files['malware']).apply(lambda x: os.path.join(ROOT_DIR, 'data/datasets/interim/m_features', x)).tolist()
         df_b = spark.read.format("csv").option("header", "true").load(b_file)
