@@ -12,12 +12,6 @@ from pathlib import Path
 import json
 import psutil
 NUM_WORKER = psutil.cpu_count(logical = False)
-SparkContext.setSystemProperty('spark.executor.memory', '64g')
-sc = SparkContext("local", "App Name")
-sc.setLogLevel("ERROR")
-spark = SparkSession(sc)
-spark.conf.set('spark.ui.showConsoleProgress', True)
-spark.conf.set("spark.sql.shuffle.partitions", NUM_WORKER)
 ROOT_DIR = Path(__file__).parent.parent.parent
 FP_processed  = 'processed/'
 FP_matrices  = 'processed/matrices'
@@ -60,6 +54,12 @@ def _file_module(test, FP_processed, FP_matrices, FP_b, FP_m, FP_A, FP_B, FP_P, 
     return fp_processed, fp_matrices, fp_b, fp_m, fp_A, fp_B, fp_P, fp_ref
 
 def construct_matrices(test, compute_A, compute_B, compute_P):
+    SparkContext.setSystemProperty('spark.executor.memory', '64g')
+    sc = SparkContext("local", "App Name")
+    sc.setLogLevel("ERROR")
+    spark = SparkSession(sc)
+    spark.conf.set('spark.ui.showConsoleProgress', True)
+    spark.conf.set("spark.sql.shuffle.partitions", NUM_WORKER)
     fp_processed, fp_matrices, fp_b, fp_m, fp_A, fp_B, fp_P, fp_ref = _file_module(test, FP_processed, FP_matrices, FP_b, FP_m, FP_A, FP_B, FP_P, FP_REF)
     _env_checker(fp_processed, fp_matrices, fp_b, fp_m, fp_ref)
     print('Start Preprocessing Data')
@@ -113,6 +113,7 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
         A = sparse.coo_matrix(
                         (values, (A[:,1], A[:,0])), shape=(num_app, num_api)
             )
+        A = (A > 0).astype(int)
         sparse.save_npz(fp_A, A)
         print('finished constructing A')
     if compute_B:
