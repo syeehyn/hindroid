@@ -21,8 +21,8 @@ from sklearn.linear_model import Ridge
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score, fbeta_score, accuracy_score, confusion_matrix
 from src import *
-FP_b = 'interim/b_features/*.csv'
-FP_m = 'interim/m_features/*.csv'
+FP_b = 'interim/b_features/*'
+FP_m = 'interim/m_features/*'
 FP_pram = os.path.join(ROOT_DIR, 'config/train-params.json')
 FP_pram_test = os.path.join(ROOT_DIR, 'config/test-train .json')
 def _preproc(test, FP_b, FP_m):
@@ -39,7 +39,7 @@ def _preproc(test, FP_b, FP_m):
         fp_b = os.path.join(ROOT_DIR, 'data/datasets', FP_b)
         fp_m = os.path.join(ROOT_DIR, 'data/datasets', FP_m)
     if test and os.path.exists(FP_pram_test):
-        files = json.load(open(FP_pram_test))
+        print('using app list of parameter to train (tests)')
         df_b = spark.read.format("csv").option("header", "true").load(files['benign'])
         df_m = spark.read.format("csv").option("header", "true").load(files['malware'])
     elif (not test) and os.path.exists(FP_pram):
