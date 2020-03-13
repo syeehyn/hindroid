@@ -34,9 +34,17 @@ def main(targets):
     if 'matrix-test' in targets:
         construct_matrices(True, True, True, True)
     if 'baseline' in targets:
-        return baseline.evaluate(False)
+        result = baseline.evaluate(False)
+        print('training metrics: ')
+        print(result[0])
+        print('testing metrics: ')
+        print(result[1])
     if 'baseline-test' in targets:
-        return baseline.evaluate(True)
+        result = baseline.evaluate(True)
+        print('training metrics: ')
+        print(result[0])
+        print('testing metrics: ')
+        print(result[1])
     if 'evaluate' in targets:
         import pandas as pd
         result = evaluate(False)
@@ -75,6 +83,10 @@ def main(targets):
             os.mkdir('./data/datasets/processed/results')
         except:
             pass
+        print('training metrics: ')
+        print(result[0])
+        print('testing metrics: ')
+        print(result[1])
         result[0].to_csv('./data/datasets/processed/results/training.csv', index = False)
         result[1].to_csv('./data/datasets/processed/results/testing.csv', index = False)
     if 'test-project' in targets:
@@ -89,6 +101,10 @@ def main(targets):
             os.mkdir('./data/tests/processed/results')
         except:
             pass
+        print('training metrics: ')
+        print(result[0])
+        print('testing metrics: ')
+        print(result[1])
         result[0].to_csv('./data/tests/processed/results/training.csv', index = False)
         result[1].to_csv('./data/tests/processed/results/testing.csv', index = False)
     return

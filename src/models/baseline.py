@@ -109,6 +109,6 @@ def evaluate(test = False, clfs = [LogisticRegression(), SVC(), RandomForestClas
                         }]
         train_res.append(res[0])
         test_res.append(res[1])
-    return len(X), pd.DataFrame(train_res), pd.DataFrame(test_res)
+    return pd.DataFrame(train_res), pd.DataFrame(test_res)
 
     
