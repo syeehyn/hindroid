@@ -33,8 +33,50 @@ def main(targets):
         construct_matrices(False, True, True, True)
     if 'matrix-test' in targets:
         construct_matrices(True, True, True, True)
+    if 'baseline' in targets:
+        return baseline.evaluate(False)
     if 'baseline-test' in targets:
         return baseline.evaluate(True)
+    if 'evaluate' in targets:
+        import pandas as pd
+        result = evaluate(False)
+        print('training metrics: ')
+        print(result[0])
+        print('testing metrics: ')
+        print(result[1])
+        try:
+            os.mkdir('./data/datasets/processed/results')
+        except:
+            pass
+        result[0].to_csv('./data/datasets/processed/results/training.csv', index = False)
+        result[1].to_csv('./data/datasets/processed/results/testing.csv', index = False)
+    if 'evaluate-test' in targets:
+        import pandas as pd
+        result = evaluate(True)
+        print('training metrics: ')
+        print(result[0])
+        print('testing metrics: ')
+        print(result[1])
+        try:
+            os.mkdir('./data/tests/processed/results')
+        except:
+            pass
+        result[0].to_csv('./data/tests/processed/results/training.csv', index = False)
+        result[1].to_csv('./data/tests/processed/results/testing.csv', index = False)
+    if 'project' in targets:
+        cfg = json.load(open('./config/data-params.json'))
+        get_data(**cfg)
+        fp = json.load(open('./config/data-params.json'))['m_dir']
+        extract_benign(False)
+        extract_malware(fp, False)
+        construct_matrices(False, True, True, True)
+        result = evaluate(False)
+        try:
+            os.mkdir('./data/datasets/processed/results')
+        except:
+            pass
+        result[0].to_csv('./data/datasets/processed/results/training.csv', index = False)
+        result[1].to_csv('./data/datasets/processed/results/testing.csv', index = False)
     if 'test-project' in targets:
         cfg = json.load(open('./config/test-params.json'))
         get_data(**cfg)
@@ -43,9 +85,12 @@ def main(targets):
         extract_malware(fp, True)
         construct_matrices(True, True, True, True)
         result = evaluate(True)
-        os.mkdir('./data/tests/processed/results')
-        result[0].to_csv('./data/tests/processed/results/training.csv')
-        result[1].to_csv('./data/tests/processed/results/testing.csv')
+        try:
+            os.mkdir('./data/tests/processed/results')
+        except:
+            pass
+        result[0].to_csv('./data/tests/processed/results/training.csv', index = False)
+        result[1].to_csv('./data/tests/processed/results/testing.csv', index = False)
     return
 
 if __name__ == '__main__':
