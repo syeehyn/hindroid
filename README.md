@@ -29,7 +29,7 @@ ML Deployment | In Progress
 
 The main task of Hindroid is to use machine learning, typically Graph Neural Network, to classify Android Apps as benign or malicious. Hindroid is designed to be an intelligent Android malware detection system based on structured heterogeneous information network.
 
-[Details] (./writeups/overview.md)
+[Details](./writeups/overview.md)
 
 ------------------------------------------------------------------------------------------------
 
@@ -103,7 +103,6 @@ import features, matrices, models, utils
 ## Description of Contents
 
 ```
-hindroid
 ├── Dockerfile
 ├── LICENSE
 ├── README.md
@@ -118,28 +117,30 @@ hindroid
 │   └── EDA_Malware&Benign.ipynb
 ├── requirements.txt
 ├── run.py
-└── src
-    ├── __init__.py
-    ├── datasets
-    │   ├── __init__.py
-    │   ├── fetching.py
-    │   └── sampling.py
-    ├── features
-    │   ├── __init__.py
-    │   ├── _extraction.py
-    │   └── features.py
-    ├── models
-    │   ├── __init__.py
-    │   ├── _matrices.py
-    │   ├── baseline.py
-    │   ├── hindroid.py
-    │   └── utils.py
-    └── utils
-        ├── __init__.py
-        ├── _decompose.py
-        ├── _download.py
-        ├── _get_malware_dir.py
-        └── metadata.py
+├── src
+│   ├── __init__.py
+│   ├── datasets
+│   │   ├── __init__.py
+│   │   ├── fetching.py
+│   │   └── sampling.py
+│   ├── features
+│   │   ├── __init__.py
+│   │   ├── _extraction.py
+│   │   └── features.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   ├── _matrices.py
+│   │   ├── baseline.py
+│   │   ├── hindroid.py
+│   │   └── utils.py
+│   └── utils
+│       ├── __init__.py
+│       ├── _decompose.py
+│       ├── _download.py
+│       ├── _get_malware_dir.py
+│       └── metadata.py
+└── writeups
+    └── overview.md
 ```
 
 ### `src`
