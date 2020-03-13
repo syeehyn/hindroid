@@ -1,6 +1,8 @@
-import dask
-from dask.distributed import Client
-import dask.dataframe as dd
+from pyspark.sql import SparkSession
+from pyspark import SparkContext
+import pyspark.ml as M
+import pyspark.sql.functions as F
+import pyspark.sql.types as T
 import pandas as pd
 import os
 import numpy as np
@@ -24,54 +26,57 @@ FP_m = 'interim/m_features/*.csv'
 FP_pram = os.path.join(ROOT_DIR, 'config/train-params.json')
 FP_pram_test = os.path.join(ROOT_DIR, 'config/test-train .json')
 def _preproc(test, FP_b, FP_m):
-    client = Client(n_workers = NUM_WORKER)
+    SparkContext.setSystemProperty('spark.executor.memory', '64g')
+    sc = SparkContext("local", "App Name")
+    sc.setLogLevel("ERROR")
+    spark = SparkSession(sc)
+    spark.conf.set('spark.ui.showConsoleProgress', True)
+    spark.conf.set("spark.sql.shuffle.partitions", NUM_WORKER)
+    if test:
+        fp_b = os.path.join(ROOT_DIR, 'data/tests', FP_b)
+        fp_m = os.path.join(ROOT_DIR, 'data/tests', FP_m)
+    else:
+        fp_b = os.path.join(ROOT_DIR, 'data/datasets', FP_b)
+        fp_m = os.path.join(ROOT_DIR, 'data/datasets', FP_m)
+    print('Start Preprocessing Data')
     if test and os.path.exists(FP_pram_test):
         files = json.load(open(FP_pram_test))
         print('using app list of parameter to train (tests)')
-        df_b = dd.concat([dd.read_csv(i) for i in files['benign']])
-        df_m = dd.concat([dd.read_csv(i) for i in files['malware']])
+        df_b = spark.read.format("csv").option("header", "true").load(files['benign'])
+        df_m = spark.read.format("csv").option("header", "true").load(files['malware'])
     elif (not test) and os.path.exists(FP_pram):
         files = json.load(open(FP_pram))
         print('using app list of parameter to train (datasets)')
-        df_b = dd.concat([dd.read_csv(i) for i in files['benign']])
-        df_m = dd.concat([dd.read_csv(i) for i in files['malware']])
+        df_b = spark.read.format("csv").option("header", "true").load(files['benign'])
+        df_m = spark.read.format("csv").option("header", "true").load(files['malware'])
     else:
-        if test:
-            fp_b = os.path.join(ROOT_DIR, 'data/tests', FP_b)
-            fp_m = os.path.join(ROOT_DIR, 'data/tests', FP_m)
-        else:
-            fp_b = os.path.join(ROOT_DIR, 'data/datasets', FP_b)
-            fp_m = os.path.join(ROOT_DIR, 'data/datasets', FP_m)        
-        df_b = dd.read_csv(fp_b)
-        df_m = dd.read_csv(fp_m)
-    df = df_b.append(df_m).reset_index()
-    df['package'] = df.api.str.split('->').apply(lambda x: x[0] if type(x) == list else x, meta = str)
-    nunique_chunk = lambda s: s.apply(lambda x: list(set(x)))
-    nunique_agg = lambda s: s._selected_obj.groupby(level=list(range(s._selected_obj.index.nlevels))).sum()
-    unique_finalize = lambda s: s.apply(lambda x: len(set(x)))
-    tunique = dd.Aggregation('tunique', nunique_chunk, nunique_agg, unique_finalize)
-    grouped = df.groupby('app').agg(
-                    {
-                        'api': tunique,
-                        'block': tunique,
-                        'package': tunique,
-                        'malware': 'mean'
-                    } , split_out = NUM_WORKER)
-    most_invo = df.groupby('app').invocation.apply(lambda x: x.mode()[0], meta = str)
-    most_api = df.groupby('app').api.apply(lambda x: x.mode()[0], meta = str)
-    most_package = df.groupby('app').package.apply(lambda x: x.mode()[0], meta = str)
-    result = dask.compute([grouped, most_invo, most_api, most_package])
-    results = result[0][0]
-    results['most_invo'] = result[0][1].tolist()
-    results['most_api'] = result[0][2].tolist()
-    results['most_package'] = result[0][3].tolist()
-    return results
+        df_b = spark.read.format("csv").option("header", "true").load(fp_b)
+        df_m = spark.read.format("csv").option("header", "true").load(fp_m)
+    df = df_b.union(df_m)
+    df = df.dropna()
+    df = df.select('api', 'app', 'block', 'malware', 'invocation')
+    df = df.withColumn('package', F.split(F.col('api'), '->')[0])
+    output = df.groupby('app').agg(
+                    F.countDistinct(F.col('api')).alias('api'),
+                    F.countDistinct(F.col('block')).alias('block'),
+                    F.countDistinct(F.col('package')).alias('package'),
+                    F.mean(F.col('malware')).cast('int').alias('malware'))
+    most_api = df.groupby(['app', 'api']).count()\
+                .groupby('app').agg(F.max(F.struct(F.col('count'),
+                                          F.col('api'))).alias('max'))\
+                .select(F.col('app'), F.col('max.api').alias('most_api'))
+    most_package = df.groupby(['app', 'package']).count()\
+                .groupby('app').agg(F.max(F.struct(F.col('count'),
+                                          F.col('package'))).alias('max'))\
+                .select(F.col('app'), F.col('max.package').alias('most_package'))
+    output = output.join(most_api, ['app']).join(most_package, ['app']).toPandas()
+    return output
 def baseline(test, clf, df):
     num_feat = ['api', 'block', 'package']
     num_transformer = Pipeline(steps=[
             ('scaler', StandardScaler())
         ])
-    cat_feat = ['most_invo', 'most_api', 'most_package']
+    cat_feat = ['most_api', 'most_package']
     cat_transformer = Pipeline(steps=[
             ('onehot', OneHotEncoder(handle_unknown='ignore'))
         ])
