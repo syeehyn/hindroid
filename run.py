@@ -4,7 +4,7 @@ import os
 from src.datasets import *
 from src.utils import create_metadata
 from src.features import extract_benign, extract_malware
-from src.models import construct_matrices
+from src.models import construct_matrices, evaluate
 from glob import glob
 def main(targets):
     if 'metadata' in targets:
@@ -33,6 +33,16 @@ def main(targets):
         construct_matrices(False, True, True, True)
     if 'matrix-test' in targets:
         construct_matrices(True, True, True, True)
+    if 'test-project' in targets:
+        cfg = json.load(open('./config/test-params.json'))
+        get_data(**cfg)
+        fp = json.load(open('./config/test-params.json'))['m_dir']
+        extract_benign(True)
+        extract_malware(fp, True)
+        construct_matrices(True, True, True, True)
+        result = evaluate(True)
+        result[0].to_csv('./data/tests/processed/results/training.csv')
+        result[1].to_csv('./data/tests/processed/results/testing.csv')
     return
 
 if __name__ == '__main__':
