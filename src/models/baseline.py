@@ -39,7 +39,7 @@ def _preproc(test, FP_b, FP_m):
         fp_b = os.path.join(ROOT_DIR, 'data/datasets', FP_b)
         fp_m = os.path.join(ROOT_DIR, 'data/datasets', FP_m)
     if test and os.path.exists(FP_pram_test):
-        print('using app list of parameter to train (tests)')
+        files = json.load(open(FP_pram_test))
         df_b = spark.read.format("csv").option("header", "true").load(files['benign'])
         df_m = spark.read.format("csv").option("header", "true").load(files['malware'])
     elif (not test) and os.path.exists(FP_pram):
