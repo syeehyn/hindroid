@@ -67,6 +67,7 @@ def _preproc(test, FP_b, FP_m):
                                           F.col('package'))).alias('max'))\
                 .select(F.col('app'), F.col('max.package').alias('most_package'))
     output = output.join(most_api, ['app']).join(most_package, ['app']).toPandas()
+    spark.stop()
     return output
 def baseline(test, clf, df):
     num_feat = ['api', 'block', 'package']

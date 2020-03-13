@@ -131,3 +131,5 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
         P = (P.dot(P.T) > 0).astype(int)
         sparse.save_npz(fp_P, P)
         print('finished constructing P')
+    spark.stop()
+    return
