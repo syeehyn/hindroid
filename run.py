@@ -43,6 +43,7 @@ def main(targets):
         extract_malware(fp, True)
         construct_matrices(True, True, True, True)
         result = evaluate(True)
+        os.mkdir('./data/tests/processed/results')
         result[0].to_csv('./data/tests/processed/results/training.csv')
         result[1].to_csv('./data/tests/processed/results/testing.csv')
     return
