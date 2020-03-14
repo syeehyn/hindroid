@@ -85,19 +85,6 @@ Parameter Json
 - `map_dir`: the file path of app map.
 - `op`: the output path of processed apps
 
-```bash
-#after fetching data, processing data
-python run.py process
-```
-
-### Use Library Code directly
-
-```python
-import sys
-sys.path.append('../src')
-import features, matrices, models, utils
-```
-
 ------------------------------------------------------------------------------------------------
 
 ## Description of Contents
