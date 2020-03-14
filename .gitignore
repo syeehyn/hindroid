@@ -40,3 +40,4 @@ ipython_config.py
 .vscode/
 .DS_store
 *dev*
+*.html
