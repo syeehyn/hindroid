@@ -117,6 +117,7 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
             )
         A = (A > 0).astype(int)
         sparse.save_npz(fp_A, A)
+        del A
         print('finished constructing A')
     if compute_B:
         B = B_prec.toPandas().values.astype(int)
@@ -126,6 +127,7 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
             ).T
         B = (B.dot(B.T) > 0).astype(int)
         sparse.save_npz(fp_B, B)
+        del B
         print('finished constructing B')
     if compute_P:
         P = P_prec.toPandas().values.astype(int)
@@ -135,6 +137,7 @@ def construct_matrices(test, compute_A, compute_B, compute_P):
             ).T
         P = (P.dot(P.T) > 0).astype(int)
         sparse.save_npz(fp_P, P)
+        del P
         print('finished constructing P')
     spark.stop()
     return
