@@ -100,8 +100,8 @@ def main(targets):
             os.mkdir('./data/datasets/processed/results')
         except:
             pass
-        result[0].to_csv('./data/datasets/processed/results/training.csv', index = False)
-        result[1].to_csv('./data/datasets/processed/results/testing.csv', index = False)
+        result[0].to_csv('./data/datasets/processed/results/training.csv', index = True)
+        result[1].to_csv('./data/datasets/processed/results/testing.csv', index = True)
         return
     if 'project' in targets:
         cfg = json.load(open('./config/data-params.json'))
@@ -119,8 +119,8 @@ def main(targets):
         print(result[0])
         print('testing metrics: ')
         print(result[1])
-        result[0].to_csv('./data/datasets/processed/results/training.csv', index = False)
-        result[1].to_csv('./data/datasets/processed/results/testing.csv', index = False)
+        result[0].to_csv('./data/datasets/processed/results/training.csv', index = True)
+        result[1].to_csv('./data/datasets/processed/results/testing.csv', index = True)
         return
     return
 
