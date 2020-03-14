@@ -88,34 +88,40 @@ def baseline(test, clf, df):
             ('clf', clf)
             ])
     return pl
-def evaluate(test = False, clfs = [LogisticRegression(), SVC(), RandomForestClassifier()], test_size = .33):
+def evaluate(test = False, clfs = [LogisticRegression(), SVC(), RandomForestClassifier()], test_size = .33, iterations = 10):
     df = _preproc(test, FP_b, FP_m)
     X = df.drop('malware', axis = 1)
     y = df.malware
-    X_train, X_test, y_train, y_test = \
-            train_test_split(X, y, test_size=test_size)
-    train_res, test_res = [], []
-    for clf in clfs:
-        model = baseline(test, clf, df)
-        model.fit(X_train, y_train)
-        y_preds = [model.predict(X_train), model.predict(X_test)]
-        y_trues = [y_train, y_test]
-        res = []
-        for y_true, y_pred in zip(y_trues, y_preds):
-            f1 = f1_score(y_true, y_pred)
-            acc = accuracy_score(y_true, y_pred)
-            tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
-            res += [{
-                    'method': type(clf).__name__,
-                    'f1': f1,
-                    'acc': acc,
-                    'tp': tp,
-                    'fp': fp,
-                    'tn': tn,
-                    'fn': fn
-                        }]
-        train_res.append(res[0])
-        test_res.append(res[1])
-    return pd.DataFrame(train_res), pd.DataFrame(test_res)
+    train_res_lst, test_res_lst = [], []
+    for _ in range(iterations):
+        X_train, X_test, y_train, y_test = \
+                train_test_split(X, y, test_size=test_size)
+        train_res, test_res = [], []
+        for clf in clfs:
+            model = baseline(test, clf, df)
+            model.fit(X_train, y_train)
+            y_preds = [model.predict(X_train), model.predict(X_test)]
+            y_trues = [y_train, y_test]
+            res = []
+            for y_true, y_pred in zip(y_trues, y_preds):
+                f1 = f1_score(y_true, y_pred)
+                acc = accuracy_score(y_true, y_pred)
+                tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+                res += [{
+                        'method': type(clf).__name__,
+                        'f1': f1,
+                        'acc': acc,
+                        'tp': tp,
+                        'fp': fp,
+                        'tn': tn,
+                        'fn': fn
+                            }]
+            train_res.append(res[0])
+            test_res.append(res[1])
+        train_res_lst.append(pd.DataFrame(train_res))
+        test_res_lst.append(pd.DataFrame(test_res))
+    mean_train_res = pd.concat(train_res_lst).groupby('method').mean()
+    mean_test_res = pd.concat(test_res_lst).groupby('method').mean()
+    return mean_train_res, mean_test_res
 
     
