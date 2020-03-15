@@ -6,7 +6,7 @@ Project|build Status
 ---|---
 Data Ingesting| Success
 Feature Extraction| Success
-ML Deployment | In Progress
+ML Deployment | Success
 
 - Project Abstract
   - [Hindroid](#hindroid)
@@ -166,7 +166,7 @@ The project is mainly built upon following packages:
 
 - [Dask](https://dask.org/)
 
-- [Spark]
+- [Spark](https://spark.apache.org/)
 
 ### Use Dockerfile
 
