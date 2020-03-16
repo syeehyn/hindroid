@@ -111,7 +111,7 @@ Under folder utils, building utility functions to download apk and transfer apks
 
 - Since we need to feed in data into a ML pipeline to make classification, we need preprocess our data, storing as a designed Data Schema like following form:
 
-  ``` source
+``` source
 ├── datasets
 │   ├── external
 │   ├── interim
@@ -151,7 +151,7 @@ Under folder utils, building utility functions to download apk and transfer apks
         ├── apps
         └── smali
 
-  ```
+```
 
   Since apks are fairly large, and we are interested in the API call of every app. We may only keep the file AndroidManifest.xml and smali folders. For each app, after extraction of smali, we will delete the .apk file
 
