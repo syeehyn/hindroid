@@ -6,6 +6,7 @@ This repository contains a mimic implementation and future implementation plan o
 
 The main task of Hindroid is to use machine learning, typically Graph Neural Network, to classify Android Apps as benign or malicious. Hindroid is designed to be an intelligent Android malware detection system based on structured heterogeneous information network.
 
+
 ## What is the Data
 
 ### APK and Smali
@@ -280,9 +281,9 @@ in the end of the report
 
 ##### Observations
 
-- The baseline model actually has a very decent result on small dataset. Since we do not have many dataset, it will avoid some overfitting in some cases.
+- The baseline model has a very decent result on small dataset. Since we do not have many dataset, it will avoid some overfitting in some cases.
 
-- As the data set getting larger and larger, the baseline model works poorly. But for Random Forest, the model is still very good because of the advantage of tree structured classifier.
+- As the data set getting larger and larger, the baseline model works poorly. But for Random Forest, the model is still very robust because of the advantage of tree structured classifier.
 
 ### Hindroid Model
 
@@ -325,16 +326,16 @@ in the end of the report
 
 #### 3. Why Hindroid ?
 
-- hindroid is a very intuitive and reasonable approach. From our EDA, we can see the significant difference between Malware and Benign apps with api calls, packages, and blocks. Api calls mainly represents malware may frequently call some api call, and there are some frequently used package with malwares. Also, the code blocks are a good representations of complexity of apps since malware are less complext than benign apps in general.
+- hindroid is a very intuitive and reasonable approach. From our EDA, we can see a significant difference between Malware and Benign apps with api calls, packages, and blocks. Api calls mainly represent that malware may frequently call some api call, and there are some frequently used package with malwares. Also, the code blocks are good representations of complexity of apps since malware are less complext than benign apps in general.
 - hindroid model utilizes those characters of API calls, code blocks, and packages to calculate the similarities between apps by constructing a Heterogeneous Information Network. In specific, AA^T means how many APIs are in common with a pair of apps. APA^T means how many pairs of APIs that uses a common package. ABA^T implies that two apps both called these specific APIs within a block in the code. With the intuitation, we can classify the apps with SVM kernel to make a decision boundary between benign apps and malware apps.
 
 #### 4. Explaination of Implementation
 
-- Since there are many and many different api calls, package, blocks in every app, we need to handle the data when it comes large. We are limited with memory, then distributed packages rather than pandas are brought to table: Spark and Dask. In specific, we used dask to handle the task stream of extracting api calls, blocks, etc from smali files, and we used pyspark to do matrix construction since Spark can easily handle the case of adjancency matrix.
+- Since there are many and many different api calls, package, blocks in every app, we need to handle the data when it comes large. We are limited with memory, then distributed computing packages rather than pandas are brought to table: Spark and Dask. In specific, we used dask to handle the task stream of extracting api calls, blocks, etc from smali files, and we used pyspark to do matrix construction since Spark can easily handle the case of adjancency matrix.
 
-- For B and P matrix, we first computted the API x Block matrix and API x Package matrix to reduce the computational cost. And then, we replace the non-zero terms with 1. In this way, since there are so any different api calls in our dataset, the number of unique block and number of package is much smaller.
+- For B and P matrix, we first computted the API x Block matrix and API x Package matrix to reduce the computational cost. And then, we replaced the non-zero terms with 1. In this way, since there are large set of different api calls in our dataset, the number of unique block and number of package is much smaller.
 
-- To store the matrices, we stored the adjacency matrices in Coordinate format `scipy.sparse.coo_matrix`. For matrix calculation, we simply uses its built-in dot product. i.e A.dot(B) We store our matrices by the file name `A.npz`, `P.npz`, `B.npz` with a reference folder `ref` containing `api_ref.json` and `app_ref.json` with mapping of which index of the matrix has which values.
+- To store the matrices, we stored the adjacency matrices in Coordinate format `scipy.sparse.coo_matrix`. For matrix calculation, we simply uses its built-in dot product in scipy. i.e A.dot(B) We store our matrices by the file name `A.npz`, `P.npz`, `B.npz` with a reference folder `ref` containing `api_ref.json` and `app_ref.json` with mapping of which index of the matrix has which values.
 
 - For SVM, we built own classifier class `hindroid` (in `src.models.hindroid`) with `scikit-learn SVC('precomputed')`
 
@@ -634,48 +635,47 @@ in the end of the report
 
 ###### Design
 - We should use F beta score since our goal is to detect Malware, we want a more strict metrics than accuracy for different Precision and Recall demanding. In specific, if user want to be aware of more malwares, then the metrics should be more in favor of Recall: F beta > 1. If user thinks himself or herself will not be easily get malware apps, the metrics should be more in favor of Precision: F beta < 1
-- In our report, we try to make the same result to compare to Hindroid paper, so we made the table above. F1 score meant to have a balanced between Recall and Precision.
+- In our report, we try to make the same result to compare with Hindroid paper, so we made the table above. F1 score meant to have a balanced between Recall and Precision.
 
 ###### Observation
 
 - We notice that the performance will not be higher when the kernal path gets more complicates. That is, a simple AA^T matrix may outperformance every other meta path like APBP^TA^T. Since our benign set is balanced with malware set (same number of targets and same apk in size), our dataset is far away from real datasets. In our cases, the naive AA^T works the best for the fully balanced datasets.
 
-- The Hindroid approach matches to hindroid paper results except for the methods involves B matrices. In this case, we suggest that the B matrix adds some noise on the Kernel matrix when training since our data set only consists the feature csv files with less than 5MB. As the apk files being smaller, the weights of B will be getting larger, and then the noise of Block will impact the overall performance. We assume that with larger apk files trained into model, the weights of noise of B will be smaller, then the performance will get better. In other words, we make hypothesis that B matrix will benifit the model as apk files in training set getting larger and larger.
+- The Hindroid approach matches to hindroid paper results except for the methods involves B matrices. In this case, we suggest that the B matrix adds some noise on the Kernel matrix when training since our data set only consists the feature csv files with less than 5MB. We suggest that as the apk files being smaller, the weights of B will be getting larger, and then the noise of Block will impact the overall performance. We assume that with larger apk files trained into model, the weights of noise of B will be smaller, then the performance will get better. In other words, we make hypothesis that B matrix will benifit the model as apk files as training set getting larger and larger.
 
 ## Conclusion & Discussion
 
 ### Data Ingestion Pipeline
 
-- For data downloading, we can download 2000+ apk in 5 minutes on DSMLP by taking advantage of parallelism in dask. - - For apk file decompiling, we took nearly 10 hours to ingesting those apk files to smali code. We question our techniques with following two points:
-    - The `I/O cost` in DSMLP, in downloading pipeling, it downloading files very fast and store in the disk. The APK tools is designed to decompile apks one by one, and it only support decompile apk in disk. When we are using DSMLP, the decompiling time would be doubled than we decompile on SSD laptop. So the I/O cost comes a big issue if we want to fetching large amount of training data of smalis.
-    - The poor `parallelism implemented in dask` when dealing with python subprocess. We used dask to manage the parallelism because of its higher level task management and pandas-like API. It may works poorly when we parallel task in subprocess.
+- For data downloading, we can download 2000+ apk in 5 minutes on DSMLP by taking advantage of parallelism in dask.
+- For apk file decompiling, it took us nearly 10 hours to ingest those apk files to smali code. We question our techniques with following two points:
+    - The `I/O cost` in DSMLP, in downloading process, it downloads files very fast and stores in the disk. The APK tool is designed to decompile apks one by one, and it only support decompile apk in disk. When we are using DSMLP, the decompiling time would be doubled than we decompile on SSD-driven laptop. So the I/O cost comes a big issue if we want to process large amount of training data of smalis.
+    - The poor `parallelism implemented in dask` when dealing with python subprocess. We used dask to manage the parallelism because of its higher level task management and pandas-like API. It may work poorly when we parallel task in python subprocess.
 
 ### Feature Extraction
 
-- For feature extraction, we also used pandas to extract each file with reading smali code files, and we used dask to parallel our tasks. For feature extraction of 2000+ apk, the total task took 5 hours. The task is expensive when we need larger datasets. We also question our techniques with `I/O cost` and `paralleim implemented in dask` mentioned in Data Ingestion Pipeline.
+- For feature extraction, we also used pandas to extract each file with reading smali code files, and we used dask to parallel our tasks. For feature extraction of 2000+ apk, the total task took 5 hours. The tasks are expensive when we need larger datasets. We also question our techniques with `I/O cost` and `paralleim implemented in dask` mentioned in Data Ingestion Pipeline.
 
 ### Model Metrics Performance
 
-- Compared to the basedline model which utlize the statistical meaning of each features, the hindroid approach is more reliable when dataset comes larger in general. From our experimental results of hindroid, we have some unsolved question and hypothesis: `how will the results be as variety data trained into model`. 
-- In specific, `how the will P and B impact the classfication as variety datasets trained in`. In the original paper of Hindroid, the ABA^T and AA^T outperforms all other metapath. In our results,AA^T also outperform others, but ABA^T performs even perform worse than our Random Forest in baseline model. We made the hypothesis that `B matrix works as a droupout layer to serve as a regularor to penalize over-fitting` since there exists a sign of over-fitting in AA^T meta path. To confirm such assumption, we need to ingest more dataset and see the training results.
+- Compared to the basedline model which utlizes the statistical meaning of each features, the hindroid approach is more reliable when dataset comes larger in general. From our experimental results of hindroid, we have some unsolved question and hypothesis: `how the results will be as variety data trained into model`. 
+- In specific, `how the will P and B impact the classfication as variety datasets trained in`. In the original paper of Hindroid, the ABA^T and AA^T outperforms all other metapath. In our results,AA^T also outperform others, but ABA^T performs even worse than our Random Forest in baseline model. We made the hypothesis that `B matrix works as a droupout layer to serve as a regularor to penalize over-fitting` since there exists a sign of over-fitting in AA^T meta path. To confirm such assumption, we need to ingest more dataset and see the training results.
 
 ### Model Computational Efficiency
 
-- In `training` process, the Basedline and Hindroid models both uses `spark` to preprocess data and constructing matrix. The training process is surprisingly fast when we have 40 samples, the training process of both of them takes a few seconds (a few minutes in pure pandas). With 810 samples, the training process of both of them takes a few minutes (a few hours in pure pandas with memory concern). Also, more importantly, the memory usage is very low. We suggest that even in I matrix, our approach will still solid and good.
+- In `training` process, the Basedline and Hindroid models both uses `spark` to preprocess data and constructing matrix. The training process is surprisingly fast when we have 40 samples, the training process of both of them takes a few seconds (a few minutes in pure pandas). With 810 samples, the training process of both of them takes a few minutes (a few hours in pure pandas with memory concern). Also, more importantly, the memory usage is very low. We suggest that even in I matrix (not implemented), our approach will still solid and good.
 - In `validation` and `testing`, we did our approaches in pure scikit-learn pipeline with no joblib parameters (no parallelism and distributed computing). For validation and testing over 40 samples, the baseline model takes a few seconds and hindroid model takes about 20+ seconds . For validation and testing over 810 samples, the baseline model takes about two minutes and the hindroid model takes about five minutes.
 
 ### Concern and Future
 
-As right now, we have a full scope about how a project is been constructed, and I did several times roll back in my development. i.e. we first constructed my training model process in dask, and it tooks forever to train, and then we switched to pyspark. And we still were still fixing our data ingestion pipeline when we were in training process, etc. We are sure that roll-back cases will still happen, but we want to avoid them as many as possible we will. We have following improvement and concern in future implementation: 
+As right now, we have a full scope about how a project is been constructed, and we did several times roll-back in my development. i.e. we first constructed my training model process in dask, and it tooks forever to train, and then we switched to pyspark. Also, we still were still fixing our data ingestion pipeline when we were in training process, etc. We are sure that roll-back cases will still happen in future deployment of next project, but we want to avoid them as many as possible. We have following improvement and concern in future implementation: 
 
 - data ingestion pipeline:
     - `I/O cost`, to reduce the I/O cost, we can get the source code of API Tool and twist it into an In-memory decompile tool to make the data ingestion pipleline faster.
-    
     - `Parallelism`. We may think about switching to command-line own parallalim or other distributed computing library.
 - feature extraction:
     - `I/O cost`, to reduce the I/O cost, we can integrate the feature extraction process in data ingetstion pipeline to do in-memory computing.
-    
-    - `Parallelism`. Using `pyspark` to do dataframe/tabular operation.
+    - `Parallelism`. Using `spark` to do dataframe/tabular operation.
 - model metrics performance:
 
     - `Classifier` the paper uses SVM to classify the preprocessed matrices, we can change differernt estimator to try out the results. i.e. We can use some tree-based algorithm like XGBoost to see if the performance will be better.
