@@ -139,12 +139,7 @@ Parameter Json
 
 ### `config`
 
-- `construct_A.json`: parameters for constructing A matrix, serving as input to library code.
-- `features.json`: parameters for processing features, serving as input to library code.
-- `malware.json`: parameters for processing malware apks, serving as input to library code.
 - `data-params.json`: common parameters for getting sampling data, serving as inputs to library code.
-- `sampling.json`: parameters for sampling methods, serving as inputs to library code.
-- `sitemap.json`: parameters for generating sitemap, serving as inputs to library code.
 - `test-params.json`: parameters for getting small test data.
 
 ### `Dockerfile`
