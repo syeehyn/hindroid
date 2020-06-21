@@ -1,0 +1,4 @@
+*.ipynb linguist-documentation
+*.html linguist-documentation
+*.css linguist-documentation
+Dockerfile linguist-documentation
