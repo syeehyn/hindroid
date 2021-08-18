@@ -1,58 +1,12 @@
 # Hindroid: An Android malware detection in Machine Learning
 
-This repository contains a mimic implementation and future implementation plan of the [Hindroid](https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf) paper (DO>>> I:[10.1145/3097983.3098026](https://doi.org/10.1145/3097983.3098026)).
-
-- [Hindroid: An Android malware detection in Machine Learning](#hindroid-an-android-malware-detection-in-machine-learning)
-  - [What Is Hindroid](#what-is-hindroid)
-  - [What is the Data](#what-is-the-data)
-    - [APK and Smali](#apk-and-smali)
-    - [Example](#example)
-    - [Data Design & Collection](#data-design--collection)
-    - [Abstract](#abstract)
-    - [Pros](#pros)
-    - [Cons](#cons)
-    - [Past Efforts](#past-efforts)
-    - [Data Ingestion Process](#data-ingestion-process)
-    - [Data Accessibility](#data-accessibility)
-    - [Data Privacy](#data-privacy)
-    - [Data Schemas](#data-schemas)
-    - [Data Ingestion Pipeline](#data-ingestion-pipeline)
-    - [Data Sampling](#data-sampling)
-    - [Data Ingesting](#data-ingesting)
-  - [Feature Extraction](#feature-extraction)
-    - [API Call Extraction](#api-call-extraction)
-  - [EDA and Sampling](#eda-and-sampling)
-  - [ML Deployment](#ml-deployment)
-    - [Baseline Model](#baseline-model)
-    - [1. Preprocess](#1-preprocess)
-    - [2. Column Transfer:](#2-column-transfer)
-    - [3. Classifier:](#3-classifier)
-    - [4. Results:](#4-results)
-    - [Observations](#observations)
-    - [Hindroid Model](#hindroid-model)
-    - [1. Preprocess w/ Matrix Construction](#1-preprocess-w-matrix-construction)
-    - [A Matrix](#a-matrix)
-    - [implementation Detail](#implementation-detail)
-    - [B Matrix](#b-matrix)
-    - [implementation Detail](#implementation-detail-1)
-    - [P Matrix](#p-matrix)
-    - [implementation Detail](#implementation-detail-2)
-    - [2. Fit into Precomputed Kernel SVM](#2-fit-into-precomputed-kernel-svm)
-    - [3. Why Hindroid ?](#3-why-hindroid-)
-    - [4. Explanation of Implementation](#4-explanation-of-implementation)
-    - [5. Experimental Results](#5-experimental-results)
-    - [Design](#design)
-    - [Observation](#observation)
-  - [Conclusion & Discussion](#conclusion--discussion)
-    - [Data Ingestion Pipeline](#data-ingestion-pipeline-1)
-    - [Feature Extraction](#feature-extraction-1)
-    - [Model Metrics Performance](#model-metrics-performance)
-    - [Model Computational Efficiency](#model-computational-efficiency)
-    - [Concern and Future](#concern-and-future)
-  - [Reference](#reference)
-    - [Malware Background](#malware-background)
-    - [Graph Techniques in Machine Learning](#graph-techniques-in-machine-learning)
-    - [Machine Learning on Source Code](#machine-learning-on-source-code)
+date: March 20, 2020
+slug: Hindroid
+status: Published
+summary: An Android malware detection project based on the https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf paper.
+Hindroid uses machine learning, typically Graph Neural Network, to classify Android Apps as benign or malicious. Hindroid is designed to be an intelligent Android malware detection system based on structured heterogeneous information network. The project contains a comprehensive report and an in-depth evaluation of Hindroid model.
+tags: Data Science, Graph Neural Network, Natural Language Processing, Project
+type: Post
 
 ## What Is Hindroid
 
@@ -397,15 +351,11 @@ we used Hindroid’s method to construct our feature matrix, the description is 
 for our 40 datasets sample, the metrics result after 10 iterations with .33 test size
 ```
 
-[Untitled](https://www.notion.so/ba8bbe1270e04ae7b7c02e6268ab7275)
-
-[Untitled](https://www.notion.so/969699af03514e4684c2d9abc31923be)
+[40 samples](https://www.notion.so/ba8bbe1270e04ae7b7c02e6268ab7275)
 
 for our 810 datasets sample, the metrics result after 810 iteration with .33 test size
 
-[Untitled](https://www.notion.so/cf86774076eb4379b9e64eb4ad048cd0)
-
-[Untitled](https://www.notion.so/f33e8e4613504d61a8d370298ed96402)
+[810 samples](https://www.notion.so/cf86774076eb4379b9e64eb4ad048cd0)
 
 ### Design
 
